@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>AndroidTVController.android_tv_controller API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>AndroidTVController.android_tv_controller</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .key_codes import KeyCodes
+from .adb_client import ADBClient
+from .tv_apps import AndroidTVApps
+
+
+
+class AndroidTVController:
+
+
+
+    def __init__(self, ip: str):
+        &#34;&#34;&#34;
+        The class has many important utils to interact with android TV using adb.
+        
+        Args:
+            ip (str): the ip address of the Android TV device
+        &#34;&#34;&#34;
+        self.__adb_client = ADBClient()
+        self.__adb_client.connect(ip)
+        
+
+
+    # ------------------------------[ Navigation Commands ]------------------------------
+
+
+
+    def press_home(self):
+        &#34;&#34;&#34;Simulates pressing home button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)
+
+
+
+    def press_back(self):
+        &#34;&#34;&#34;Simulates pressing back button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)
+
+
+
+    def press_dpad_up(self):
+        &#34;&#34;&#34;Simulates pressing up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_UP)
+
+
+
+    def press_dpad_down(self):
+        &#34;&#34;&#34;Simulates pressing down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_DOWN)
+
+
+
+    def press_dpad_left(self):
+        &#34;&#34;&#34;Simulates pressing left button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_LEFT)
+
+
+
+    def press_dpad_right(self):
+        &#34;&#34;&#34;Simulates pressing right button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_RIGHT)
+
+
+
+    def press_enter(self):
+        &#34;&#34;&#34;Simulates pressing enter button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_ENTER)
+
+    
+    
+    # ------------------------------[ Volume Commands ]------------------------------
+    
+    
+    
+    def press_volume_up(self):
+        &#34;&#34;&#34;Simulates pressing volume up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_UP)
+
+
+
+    def press_volume_down(self):
+        &#34;&#34;&#34;Simulates pressing volume down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_DOWN)
+
+
+
+    def press_volume_mute(self):
+        &#34;&#34;&#34;Simulates pressing volume mute button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_MUTE)
+
+
+
+    # ------------------------------[ Power Commands ]------------------------------
+
+
+
+    def press_power(self):
+        &#34;&#34;&#34;
+        Simulates pressing power button on Android TV device remote control.
+        you can use it to power on/off the TV device.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_POWER)
+        
+        
+        
+    def press_sleep(self):
+        &#34;&#34;&#34;
+        Puts the TV into a low-power state. The TV will still be able to receive
+        signals from the remote control, and it will wake up quickly when you press a button. 
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SLEEP)
+        
+        
+        
+    def press_soft_sleep(self):
+        &#34;&#34;&#34;
+        This is a deeper sleep option than sleep, and it uses even less power.
+        The TV will not be able to receive signals from the remote control while in soft sleep,
+        and it will take a few seconds to wake up when you press a button.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SOFT_SLEEP)
+
+
+
+    def press_wakeup(self):
+        &#34;&#34;&#34;
+        Tell the TV when you want it to wake up from sleep.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_WAKEUP)
+
+
+
+    # ------------------------------[ Channels Commands ]------------------------------
+
+
+
+    def press_channel_up(self):
+        &#34;&#34;&#34;Simulates pressing channel up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_UP)
+
+
+
+    def press_channel_down(self):
+        &#34;&#34;&#34;Simulates pressing channel down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_DOWN)
+        
+        
+        
+    def press_channel_number(self, channel_number: str):
+        &#34;&#34;&#34;Simulates pressing channel number digits buttons on Android TV device remote control.&#34;&#34;&#34;
+        numbers_key_codes = {
+            &#39;0&#39;: KeyCodes.KEYCODE_0,
+            &#39;1&#39;: KeyCodes.KEYCODE_1,
+            &#39;2&#39;: KeyCodes.KEYCODE_2,
+            &#39;3&#39;: KeyCodes.KEYCODE_3,
+            &#39;4&#39;: KeyCodes.KEYCODE_4,
+            &#39;5&#39;: KeyCodes.KEYCODE_5,
+            &#39;6&#39;: KeyCodes.KEYCODE_6,
+            &#39;7&#39;: KeyCodes.KEYCODE_7,
+            &#39;8&#39;: KeyCodes.KEYCODE_8,
+            &#39;9&#39;: KeyCodes.KEYCODE_9,
+        }
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        for digit in channel_number:
+            self.__adb_client.send_keyevent_input(numbers_key_codes[digit])
+    
+    
+    
+    # ------------------------------[ Apps Commands ]------------------------------
+
+    
+    
+    def open_app(self, package: str, activity: str):
+        &#34;&#34;&#34;
+        The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+        
+        To get the package name for an app search for it on google, or
+        if the app is installed use `adb_client.list_packages()` method.
+        To get main activity name use `adb_client.get_package_activities(package_name)`
+        and try to interpret the output dump to extract the main launcher activity.
+    
+        Args:
+            package (str): The package parameter is a string that represents the package name of the
+                Android application you want to start. This is typically the unique identifier for the app and
+                is specified in the AndroidManifest.xml file of the app.
+            activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
+                Android app that you want to start. An activity represents a single screen with a user
+                interface, and it is the basic building block of an Android app. Each activity has a unique name
+                that is specified in the AndroidManifest.xml file
+        &#34;&#34;&#34;
+        if self.__adb_client.is_installed(package):
+            self.__adb_client.start_app(package, activity)
+    
+    
+    
+    def open_chrome(self):
+        &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
+        app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+
+    
+    
+    def open_youtube(self):
+        &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
+        app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+    
+    
+    
+    def open_netflix(self):
+        &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
+        app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+    
+    
+    
+    def open_amazon_prime(self):
+        &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
+        app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+        
+        
+        
+    def open_watch_it(self):
+        &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
+        app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController"><code class="flex name class">
+<span>class <span class="ident">AndroidTVController</span></span>
+<span>(</span><span>ip: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The class has many important utils to interact with android TV using adb.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
+<dd>the ip address of the Android TV device</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AndroidTVController:
+
+
+
+    def __init__(self, ip: str):
+        &#34;&#34;&#34;
+        The class has many important utils to interact with android TV using adb.
+        
+        Args:
+            ip (str): the ip address of the Android TV device
+        &#34;&#34;&#34;
+        self.__adb_client = ADBClient()
+        self.__adb_client.connect(ip)
+        
+
+
+    # ------------------------------[ Navigation Commands ]------------------------------
+
+
+
+    def press_home(self):
+        &#34;&#34;&#34;Simulates pressing home button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)
+
+
+
+    def press_back(self):
+        &#34;&#34;&#34;Simulates pressing back button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)
+
+
+
+    def press_dpad_up(self):
+        &#34;&#34;&#34;Simulates pressing up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_UP)
+
+
+
+    def press_dpad_down(self):
+        &#34;&#34;&#34;Simulates pressing down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_DOWN)
+
+
+
+    def press_dpad_left(self):
+        &#34;&#34;&#34;Simulates pressing left button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_LEFT)
+
+
+
+    def press_dpad_right(self):
+        &#34;&#34;&#34;Simulates pressing right button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_RIGHT)
+
+
+
+    def press_enter(self):
+        &#34;&#34;&#34;Simulates pressing enter button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_ENTER)
+
+    
+    
+    # ------------------------------[ Volume Commands ]------------------------------
+    
+    
+    
+    def press_volume_up(self):
+        &#34;&#34;&#34;Simulates pressing volume up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_UP)
+
+
+
+    def press_volume_down(self):
+        &#34;&#34;&#34;Simulates pressing volume down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_DOWN)
+
+
+
+    def press_volume_mute(self):
+        &#34;&#34;&#34;Simulates pressing volume mute button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_MUTE)
+
+
+
+    # ------------------------------[ Power Commands ]------------------------------
+
+
+
+    def press_power(self):
+        &#34;&#34;&#34;
+        Simulates pressing power button on Android TV device remote control.
+        you can use it to power on/off the TV device.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_POWER)
+        
+        
+        
+    def press_sleep(self):
+        &#34;&#34;&#34;
+        Puts the TV into a low-power state. The TV will still be able to receive
+        signals from the remote control, and it will wake up quickly when you press a button. 
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SLEEP)
+        
+        
+        
+    def press_soft_sleep(self):
+        &#34;&#34;&#34;
+        This is a deeper sleep option than sleep, and it uses even less power.
+        The TV will not be able to receive signals from the remote control while in soft sleep,
+        and it will take a few seconds to wake up when you press a button.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SOFT_SLEEP)
+
+
+
+    def press_wakeup(self):
+        &#34;&#34;&#34;
+        Tell the TV when you want it to wake up from sleep.
+        &#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_WAKEUP)
+
+
+
+    # ------------------------------[ Channels Commands ]------------------------------
+
+
+
+    def press_channel_up(self):
+        &#34;&#34;&#34;Simulates pressing channel up button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_UP)
+
+
+
+    def press_channel_down(self):
+        &#34;&#34;&#34;Simulates pressing channel down button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_DOWN)
+        
+        
+        
+    def press_channel_number(self, channel_number: str):
+        &#34;&#34;&#34;Simulates pressing channel number digits buttons on Android TV device remote control.&#34;&#34;&#34;
+        numbers_key_codes = {
+            &#39;0&#39;: KeyCodes.KEYCODE_0,
+            &#39;1&#39;: KeyCodes.KEYCODE_1,
+            &#39;2&#39;: KeyCodes.KEYCODE_2,
+            &#39;3&#39;: KeyCodes.KEYCODE_3,
+            &#39;4&#39;: KeyCodes.KEYCODE_4,
+            &#39;5&#39;: KeyCodes.KEYCODE_5,
+            &#39;6&#39;: KeyCodes.KEYCODE_6,
+            &#39;7&#39;: KeyCodes.KEYCODE_7,
+            &#39;8&#39;: KeyCodes.KEYCODE_8,
+            &#39;9&#39;: KeyCodes.KEYCODE_9,
+        }
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        for digit in channel_number:
+            self.__adb_client.send_keyevent_input(numbers_key_codes[digit])
+    
+    
+    
+    # ------------------------------[ Apps Commands ]------------------------------
+
+    
+    
+    def open_app(self, package: str, activity: str):
+        &#34;&#34;&#34;
+        The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+        
+        To get the package name for an app search for it on google, or
+        if the app is installed use `adb_client.list_packages()` method.
+        To get main activity name use `adb_client.get_package_activities(package_name)`
+        and try to interpret the output dump to extract the main launcher activity.
+    
+        Args:
+            package (str): The package parameter is a string that represents the package name of the
+                Android application you want to start. This is typically the unique identifier for the app and
+                is specified in the AndroidManifest.xml file of the app.
+            activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
+                Android app that you want to start. An activity represents a single screen with a user
+                interface, and it is the basic building block of an Android app. Each activity has a unique name
+                that is specified in the AndroidManifest.xml file
+        &#34;&#34;&#34;
+        if self.__adb_client.is_installed(package):
+            self.__adb_client.start_app(package, activity)
+    
+    
+    
+    def open_chrome(self):
+        &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
+        app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+
+    
+    
+    def open_youtube(self):
+        &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
+        app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+    
+    
+    
+    def open_netflix(self):
+        &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
+        app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+    
+    
+    
+    def open_amazon_prime(self):
+        &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
+        app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+        
+        
+        
+    def open_watch_it(self):
+        &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
+        app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">
+<span>def <span class="ident">open_amazon_prime</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Amazon Prime Video application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_amazon_prime(self):
+    &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
+    app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_app"><code class="name flex">
+<span>def <span class="ident">open_app</span></span>(<span>self, package: str, activity: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The function checks if the TV Android app is installed and then starts this app with the specified package and activity.</p>
+<p>To get the package name for an app search for it on google, or
+if the app is installed use <code>adb_client.list_packages()</code> method.
+To get main activity name use <code>adb_client.get_package_activities(package_name)</code>
+and try to interpret the output dump to extract the main launcher activity.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>package</code></strong> :&ensp;<code>str</code></dt>
+<dd>The package parameter is a string that represents the package name of the
+Android application you want to start. This is typically the unique identifier for the app and
+is specified in the AndroidManifest.xml file of the app.</dd>
+<dt><strong><code>activity</code></strong> :&ensp;<code>str</code></dt>
+<dd>The "activity" parameter refers to the specific activity or screen within the
+Android app that you want to start. An activity represents a single screen with a user
+interface, and it is the basic building block of an Android app. Each activity has a unique name
+that is specified in the AndroidManifest.xml file</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_app(self, package: str, activity: str):
+    &#34;&#34;&#34;
+    The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+    
+    To get the package name for an app search for it on google, or
+    if the app is installed use `adb_client.list_packages()` method.
+    To get main activity name use `adb_client.get_package_activities(package_name)`
+    and try to interpret the output dump to extract the main launcher activity.
+
+    Args:
+        package (str): The package parameter is a string that represents the package name of the
+            Android application you want to start. This is typically the unique identifier for the app and
+            is specified in the AndroidManifest.xml file of the app.
+        activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
+            Android app that you want to start. An activity represents a single screen with a user
+            interface, and it is the basic building block of an Android app. Each activity has a unique name
+            that is specified in the AndroidManifest.xml file
+    &#34;&#34;&#34;
+    if self.__adb_client.is_installed(package):
+        self.__adb_client.start_app(package, activity)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_chrome"><code class="name flex">
+<span>def <span class="ident">open_chrome</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Google Chrome application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_chrome(self):
+    &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
+    app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_netflix"><code class="name flex">
+<span>def <span class="ident">open_netflix</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Netflix application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_netflix(self):
+    &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
+    app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it"><code class="name flex">
+<span>def <span class="ident">open_watch_it</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Watch IT application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_watch_it(self):
+    &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
+    app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_youtube"><code class="name flex">
+<span>def <span class="ident">open_youtube</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Youtube TV application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_youtube(self):
+    &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
+    app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_back"><code class="name flex">
+<span>def <span class="ident">press_back</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing back button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_back(self):
+    &#34;&#34;&#34;Simulates pressing back button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down"><code class="name flex">
+<span>def <span class="ident">press_channel_down</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing channel down button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_channel_down(self):
+    &#34;&#34;&#34;Simulates pressing channel down button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_DOWN)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number"><code class="name flex">
+<span>def <span class="ident">press_channel_number</span></span>(<span>self, channel_number: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing channel number digits buttons on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_channel_number(self, channel_number: str):
+    &#34;&#34;&#34;Simulates pressing channel number digits buttons on Android TV device remote control.&#34;&#34;&#34;
+    numbers_key_codes = {
+        &#39;0&#39;: KeyCodes.KEYCODE_0,
+        &#39;1&#39;: KeyCodes.KEYCODE_1,
+        &#39;2&#39;: KeyCodes.KEYCODE_2,
+        &#39;3&#39;: KeyCodes.KEYCODE_3,
+        &#39;4&#39;: KeyCodes.KEYCODE_4,
+        &#39;5&#39;: KeyCodes.KEYCODE_5,
+        &#39;6&#39;: KeyCodes.KEYCODE_6,
+        &#39;7&#39;: KeyCodes.KEYCODE_7,
+        &#39;8&#39;: KeyCodes.KEYCODE_8,
+        &#39;9&#39;: KeyCodes.KEYCODE_9,
+    }
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+    for digit in channel_number:
+        self.__adb_client.send_keyevent_input(numbers_key_codes[digit])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up"><code class="name flex">
+<span>def <span class="ident">press_channel_up</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing channel up button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_channel_up(self):
+    &#34;&#34;&#34;Simulates pressing channel up button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_UP)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down"><code class="name flex">
+<span>def <span class="ident">press_dpad_down</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing down button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_dpad_down(self):
+    &#34;&#34;&#34;Simulates pressing down button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_DOWN)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left"><code class="name flex">
+<span>def <span class="ident">press_dpad_left</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing left button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_dpad_left(self):
+    &#34;&#34;&#34;Simulates pressing left button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_LEFT)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right"><code class="name flex">
+<span>def <span class="ident">press_dpad_right</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing right button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_dpad_right(self):
+    &#34;&#34;&#34;Simulates pressing right button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_RIGHT)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up"><code class="name flex">
+<span>def <span class="ident">press_dpad_up</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing up button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_dpad_up(self):
+    &#34;&#34;&#34;Simulates pressing up button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_UP)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_enter"><code class="name flex">
+<span>def <span class="ident">press_enter</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing enter button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_enter(self):
+    &#34;&#34;&#34;Simulates pressing enter button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_ENTER)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_home"><code class="name flex">
+<span>def <span class="ident">press_home</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing home button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_home(self):
+    &#34;&#34;&#34;Simulates pressing home button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_power"><code class="name flex">
+<span>def <span class="ident">press_power</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing power button on Android TV device remote control.
+you can use it to power on/off the TV device.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_power(self):
+    &#34;&#34;&#34;
+    Simulates pressing power button on Android TV device remote control.
+    you can use it to power on/off the TV device.
+    &#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_POWER)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_sleep"><code class="name flex">
+<span>def <span class="ident">press_sleep</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Puts the TV into a low-power state. The TV will still be able to receive
+signals from the remote control, and it will wake up quickly when you press a button.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_sleep(self):
+    &#34;&#34;&#34;
+    Puts the TV into a low-power state. The TV will still be able to receive
+    signals from the remote control, and it will wake up quickly when you press a button. 
+    &#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SLEEP)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep"><code class="name flex">
+<span>def <span class="ident">press_soft_sleep</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is a deeper sleep option than sleep, and it uses even less power.
+The TV will not be able to receive signals from the remote control while in soft sleep,
+and it will take a few seconds to wake up when you press a button.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_soft_sleep(self):
+    &#34;&#34;&#34;
+    This is a deeper sleep option than sleep, and it uses even less power.
+    The TV will not be able to receive signals from the remote control while in soft sleep,
+    and it will take a few seconds to wake up when you press a button.
+    &#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SOFT_SLEEP)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down"><code class="name flex">
+<span>def <span class="ident">press_volume_down</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing volume down button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_volume_down(self):
+    &#34;&#34;&#34;Simulates pressing volume down button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_DOWN)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute"><code class="name flex">
+<span>def <span class="ident">press_volume_mute</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing volume mute button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_volume_mute(self):
+    &#34;&#34;&#34;Simulates pressing volume mute button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_MUTE)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up"><code class="name flex">
+<span>def <span class="ident">press_volume_up</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing volume up button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_volume_up(self):
+    &#34;&#34;&#34;Simulates pressing volume up button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_UP)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup"><code class="name flex">
+<span>def <span class="ident">press_wakeup</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Tell the TV when you want it to wake up from sleep.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_wakeup(self):
+    &#34;&#34;&#34;
+    Tell the TV when you want it to wake up from sleep.
+    &#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_WAKEUP)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="AndroidTVController" href="index.html">AndroidTVController</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="AndroidTVController.android_tv_controller.AndroidTVController" href="#AndroidTVController.android_tv_controller.AndroidTVController">AndroidTVController</a></code></h4>
+<ul class="">
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime">open_amazon_prime</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_app" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_app">open_app</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_chrome" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_chrome">open_chrome</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_netflix" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_netflix">open_netflix</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it">open_watch_it</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_youtube" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_youtube">open_youtube</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_back" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_back">press_back</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down">press_channel_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number">press_channel_number</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up">press_channel_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down">press_dpad_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left">press_dpad_left</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right">press_dpad_right</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up">press_dpad_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_enter" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_enter">press_enter</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_home" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_home">press_home</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_power" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_power">press_power</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_sleep" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_sleep">press_sleep</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep">press_soft_sleep</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down">press_volume_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute">press_volume_mute</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up">press_volume_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup">press_wakeup</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
