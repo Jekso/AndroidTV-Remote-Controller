@@ -17,15 +17,15 @@ This means you can use it to control your Android TV or even any android devices
     - List all packages and easily filter them as system, third-party, enabled, disabled apps.
     - Get package activities to easily use it for auto starting and stopping apps.
     - Interact with device shell and invoke any shell commands.
-    - List services and stop them
+    - List, start and stop services.
     - Power On/Off, Sleep, Soft sleep & Wake up the TV.
     - Easily navigate home screen and menus using D-Pad navigation
     - Control volume (up, down, mute)
-    - Control channel buttons (up, down) or using channel number
+    - Control TV channel buttons (up, down) or using channel number
     - Send text input for any input fields (e.g., Search).
     - Open famous apps (e.g., YouTube, Netflix, Amazon Prime, Watch IT)
     - Start any other application by using its package name.
-    - Simulate all android key codes not just for TV but any android device: <a href="https://www.temblast.com/ref/akeyscode.htm" target="_blank">Check Supported Key Codes List</a>
+    - Simulate all android key codes not just for TV but for any android device: <a href="https://www.temblast.com/ref/akeyscode.htm" target="_blank">Check Supported Key Codes List</a>
 - **Clear and concise API:**
     - Intuitive methods for common actions
     - Well-organized code structure
@@ -35,6 +35,7 @@ This means you can use it to control your Android TV or even any android devices
     - No need for manual ADB setup
 - **Cross-platform compatibility:**
     - Works seamlessly on Windows, macOS, and Linux
+    - Tested on Samsung Android TV.
 
 ## Installation
 
@@ -80,7 +81,7 @@ controller.press_soft_sleep()
 controller.press_wakeup()
 
 
-# --------------[ Power Commands ]--------------
+# --------------[ TV Satellite channels Commands ]--------------
 controller.press_channel_up()
 controller.press_channel_down()
 controller.press_channel_number('213')
