@@ -651,7 +651,7 @@ class ADBClient:
         """
         command = f'input keyevent {keycode.name}'
         if long_press:
-            command += '--longpress'
+            command += ' --longpress'
         return self.execute_shell_command(command)
     
     
