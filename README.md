@@ -461,7 +461,7 @@ KeyCodes.KEYCODE_DEMO_APP_4
 ```
 ## Documentation
 
-For detailed usage instructions and a complete list of available commands, refer to the comprehensive documentation: https://your-documentation-link-here
+For detailed usage instructions and a complete list of available commands, refer to the comprehensive documentation: https://jekso.github.io/AndroidTV-Remote-Controller/
 
 ## Contributing
 
