@@ -147,7 +147,7 @@ adb_client.stop_service('com.android.Settings/com.android.Settings.ServiceName')
 
 
 # --------------[ Inputs Commands ]--------------
-adb_client.send_keyevent_input(KeyCodes.KeyCodes.KEYCODE_HOME)
+adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)
 adb_client.send_text_input('Welcome to Metaverse')
 ```
 
