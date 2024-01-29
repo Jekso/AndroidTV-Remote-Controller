@@ -24,6 +24,14 @@ class ADBClient:
         3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version & get your TV IP address.
             you can follow this link `https://www.makeuseof.com/how-to-use-adb-on-android-tv/`
         
+        Some important resources:
+            https://developer.android.com/tools/adb
+            https://developer.android.com/studio/command-line/adb
+            https://technastic.com/set-up-adb-over-wifi-android/
+            https://technastic.com/adb-shell-commands-list/
+            https://technastic.com/adb-commands-list-adb-cheat-sheet/
+            https://www.makeuseof.com/how-to-use-adb-on-android-tv/
+        
         Args:
             verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
                 enable verbose logging. If set to `True`, it will display additional information during the
