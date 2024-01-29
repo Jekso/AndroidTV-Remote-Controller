@@ -1,22 +1,37 @@
-from .key_codes import KeyCodes
 from .adb_client import ADBClient
 from .tv_apps import AndroidTVApps
-
+from .key_codes import KeyCodes
 
 
 class AndroidTVController:
 
 
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, verbose: bool=False, show_command: bool=False):
         """
         The class has many important utils to interact with android TV using adb.
         
         Args:
             ip (str): the ip address of the Android TV device
+            verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
+                enable verbose logging. If set to `True`, it will display additional information during the
+                execution of the code. If set to `False` (default), it will not display any additional
+                information. Defaults to False.
+            show_command (bool): The `show_command` parameter is a boolean flag that determines whether or
+                not to display the executed ADB commands. If `show_command` is set to `True`, the executed ADB
+                commands will be shown. If `show_command` is set to `False`, the executed ADB commands will.
+                Defaults to False.
         """
-        self.__adb_client = ADBClient()
+        self.__adb_client = ADBClient(verbose, show_command)
         self.__adb_client.connect(ip)
+    
+    
+    
+    def get_adb_client(self):
+        """
+        Return the adb session client.
+        """
+        return self.__adb_client
         
 
 
@@ -163,7 +178,7 @@ class AndroidTVController:
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
         for digit in channel_number:
             self.__adb_client.send_keyevent_input(numbers_key_codes[digit])
-    
+        
     
     
     # ------------------------------[ Apps Commands ]------------------------------
@@ -172,7 +187,7 @@ class AndroidTVController:
     
     def open_app(self, package: str, activity: str):
         """
-        The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+        The function starts app with the specified package and activity.
         
         To get the package name for an app search for it on google, or
         if the app is installed use `adb_client.list_packages()` method.
@@ -188,15 +203,7 @@ class AndroidTVController:
                 interface, and it is the basic building block of an Android app. Each activity has a unique name
                 that is specified in the AndroidManifest.xml file
         """
-        if self.__adb_client.is_installed(package):
-            self.__adb_client.start_app(package, activity)
-    
-    
-    
-    def open_chrome(self):
-        """Opens Google Chrome application"""
-        app = AndroidTVApps.CHROME.value.split('/')
-        self.open_app(app[0], app[1])
+        self.__adb_client.start_app(package, activity)
 
     
     
@@ -224,4 +231,11 @@ class AndroidTVController:
     def open_watch_it(self):
         """Opens Watch IT application"""
         app = AndroidTVApps.WATCH_IT.value.split('/')
+        self.open_app(app[0], app[1])
+        
+    
+    
+    def open_shahid(self):
+        """Opens Shahid application"""
+        app = AndroidTVApps.SHAHID.value.split('/')
         self.open_app(app[0], app[1])

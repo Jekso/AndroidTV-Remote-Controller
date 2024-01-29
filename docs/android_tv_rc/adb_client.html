@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>AndroidTVController.adb_client API documentation</title>
+<title>AndroidTVController.android_tv_rc.adb_client API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>AndroidTVController.adb_client</code></h1>
+<h1 class="title">Module <code>AndroidTVController.android_tv_rc.adb_client</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -42,30 +42,25 @@ class ADBClient:
 
 
     def __init__(self, verbose: bool=False, show_command: bool=False):
-        &#34;&#34;&#34;Pythonic way to interact with adb commands.
+        &#34;&#34;&#34;Pythonic way to execute adb commands on Android TV devices.
         
         The ADBClient class is used to interact with the ADB command-line tool in Python, allowing for
-        communication with Android devices.
-        1-Before running
-            You need Android Platform Tools installed and available on your PATH environment variable.
-            https://developer.android.com/studio/releases/platform-tools#download
-            Ensure you run `adb tcpip 5555` to enable TCP mode.
-        2-ADB commands references
-            https://developer.android.com/tools/adb
-            https://developer.android.com/studio/command-line/adb
-            https://technastic.com/set-up-adb-over-wifi-android/
-            https://technastic.com/adb-shell-commands-list/
-            https://technastic.com/adb-commands-list-adb-cheat-sheet/
+        communication with Android TV devices in TCP Wireless mode.
+        1-Before running you need Android Platform Tools installed and available on your PATH environment variable.
+            `https://developer.android.com/studio/releases/platform-tools#download`
+        2-Make sure your computer running the python library and the android device is on the same network.
+        3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
+            you can follow this link `https://www.makeuseof.com/how-to-use-adb-on-android-tv/`
         
         Args:
             verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
                 enable verbose logging. If set to `True`, it will display additional information during the
                 execution of the code. If set to `False` (default), it will not display any additional
-                information. Defaults to False
+                information. Defaults to False.
             show_command (bool): The `show_command` parameter is a boolean flag that determines whether or
                 not to display the executed ADB commands. If `show_command` is set to `True`, the executed ADB
                 commands will be shown. If `show_command` is set to `False`, the executed ADB commands will.
-                Defaults to False
+                Defaults to False.
         &#34;&#34;&#34;
         # logs verbose 
         self.__verbose = verbose
@@ -84,7 +79,7 @@ class ADBClient:
 
 
     
-    def __execute_command(self, command_str: str, blocking: bool=True) -&gt; Any:
+    def __execute_command(self, command_str: str, blocking: bool=True, include_selected_serial: bool=True) -&gt; Any:
         &#34;&#34;&#34;
         The function executes a shell command using the adb tool, with the option to run it in blocking
         or non-blocking mode.
@@ -94,24 +89,45 @@ class ADBClient:
                 to be executed. It can be any valid adb command or a combination of adb commands.
             blocking (bool): The `blocking` parameter is a boolean flag that determines whether the
                 command should be executed synchronously (blocking) or asynchronously (non-blocking). Defaults
-                to True
+                to True.
+            include_selected_serial (bool): Whether to include selected device serial in the command, Defaults 
+                to True.
 
         Returns:
             The method `__execute_command` returns the output of the shell command that is executed. If
             the `blocking` parameter is set to `True`, it returns the stdout of the command as a string. If
             `blocking` is set to `False`, it returns a `subprocess.Popen` object.
+            
+        Raises:
+            OSError: This occurs, for example, when trying to execute a non-existent file.
+            ValueError: will be raised if process is called with invalid arguments.
+            CalledProcessError: if the called process returns a non-zero return code.
+            TimeoutExpired: if the timeout expires before the process exits.
         &#34;&#34;&#34;
+        
+        # adb base command
         command = &#39;adb &#39;
-        if self.__selected_device is not None:
+        
+        # specify a device serial
+        if self.__selected_device and include_selected_serial:
             command += f&#39;-s {self.__selected_device} &#39;
+            
+        # append the command to base adb
         command += command_str
+        
+        # show executed command if needed
         if self.__verbose and self.__show_command:
-            Logger.info(f&#39;[bold]Command:[/bold] {command}&#39;)
+            Logger.info(f&#39;[bold]Command:[/bold] [blue]{command}[/blue]&#39;)
+            
+        # convert command string to list of splitted tokens
         command_parts = shlex.split(command, posix=&#34;win&#34; not in sys.platform)
+        
         if blocking:
+            # run the command and waits for full execution
             proc = subprocess.run(command_parts, check=True, capture_output=True, text=True)
             return proc.stdout.strip()
         else:
+            # run the process in background and continue the python script
             return subprocess.Popen(command_parts, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     
     
@@ -120,40 +136,127 @@ class ADBClient:
 
 
 
-    def start_server(self):
+    def start_server(self) -&gt; bool:
         &#34;&#34;&#34;
-        The function starts an ADB server and waits for it to start up.
+        The function `start_server` starts an ADB server and waits for it to start up.
+        
+        Returns:
+            Boolean indicating whether the server is running or not.
         &#34;&#34;&#34;
-        command = &#39;start-server&#39;
-        if self.__verbose:
+        Logger.info(&#39;Starting ADB server..&#39;)
+        
+        # start the adb server as background process
+        self.__server_process = self.__execute_command(&#39;start-server&#39;, blocking=False, include_selected_serial=False)
+        
+        # give time to start up
+        time.sleep(5)
+        
+        if self.__server_process:
             Logger.success(&#39;ADB server is started&#39;)
-        self.__server_process = self.__execute_command(command, False)
-        time.sleep(5) # give time to start up
+            return True
+        else:
+            Logger.error(f&#39;Unable to start ADB server&#39;)
+            return False
 
 
 
-    def kill_server(self):
+    def kill_server(self) -&gt; bool:
         &#34;&#34;&#34;
         The function `kill_server` stops the ADB server and terminates any running server process.
+                
+        Returns:
+            Boolean indicating whether the server is stopped or not.
         &#34;&#34;&#34;
-        command = &#39;kill-server&#39;
-        self.__execute_command(command)
+        Logger.info(&#39;Stopping ADB server..&#39;)
+        self.__execute_command(&#39;kill-server&#39;, include_selected_serial=False)
         if self.__server_process:
             self.__server_process.terminate()
-        self.clean()
-        if self.__verbose:
+            self.__server_process = None
+            self.clean()
             Logger.success(&#39;ADB server is stopped&#39;)
+            return True
+        else:
+            Logger.error(f&#39;No ADB server process running&#39;)
+            return False
     
     
     
     def clean(self):
         &#34;&#34;&#34;Resets and clean&#34;&#34;&#34;
+        Logger.info(&#39;Cleaning up&#39;)
         self.__devices = []
         self.__selected_device = None
         self.__server_process = None
 
 
 
+    # ------------------------------[ Connectivity Commands ]------------------------------
+
+
+
+    def connect(self, ip: str) -&gt; bool:
+        &#34;&#34;&#34;
+        The function connects to an IP address and raises an error if the connection fails.
+        
+        Args:
+            ip (str): The `ip` parameter in the `connect` method is a string that represents the IP
+                address of the device you want to connect.
+        
+        Returns:
+            Boolean: True if the connection succeeded, False if the connection failed.
+        &#34;&#34;&#34;
+        Logger.info(f&#39;Connecting to [bold green]{ip}[/bold green] ..&#39;)
+        result = self.__execute_command(f&#39;connect {ip}&#39;, include_selected_serial=False)
+        if &#34;connected&#34; in result:
+            self.__devices = self.get_devices()
+            self.__selected_device = self.__devices[-1]
+            Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is connected successfully&#39;)
+            return True
+        else: # &#34;failed&#34; in result
+            Logger.error(f&#39;Connection with [bold blue]{ip}[/bold blue] failed&#39;)
+            return False
+    
+
+
+    def is_connected(self, ip: str) -&gt; bool:
+        &#34;&#34;&#34;
+        The function checks if a device with a given IP address is connected to adb server.
+        
+        Args:
+            ip (str): The `ip` parameter is a string that represents an IP address.
+        
+        Returns:
+            Boolean value. It returns True if there is a device in the list of devices with the
+            specified IP address, and False otherwise.
+        &#34;&#34;&#34;
+        for device in self.__devices:
+            if device.split(&#39;:&#39;)[0] == ip:
+                Logger.success(f&#39;Device: [bold blue]{ip}[/bold blue] is connected&#39;)
+                return True
+        Logger.error(f&#39;Device [bold blue]{ip}[/bold blue] is not connected&#39;)
+        return False
+
+
+
+    def disconnect(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Disconnect selected device.
+        
+        Returns:
+            Boolean: True if the device is disconnected.
+        &#34;&#34;&#34;
+        Logger.info(f&#39;Disconnecting device..&#39;)
+        if &#39;disconnected&#39; in self.__execute_command(&#39;disconnect&#39;):
+            self.__devices = self.get_devices()
+            self.__selected_device = None
+            Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is disconnected&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Error while disconnecting device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+            return False
+
+
+ 
     # ------------------------------[ Info Commands ]------------------------------
     
     
@@ -174,101 +277,129 @@ class ADBClient:
             connected device. Each dictionary contains the following keys: &#39;ip&#39;, &#39;serial_number&#39;, &#39;state&#39;,
             and &#39;description&#39;.
         &#34;&#34;&#34;
+        Logger.info(f&#39;Getting connected devices..&#39;)
+        self.__devices = []
         command = &#39;devices&#39;
         if include_descriptions:
             command += &#39; -l&#39;
-        result = self.__execute_command(command)
+        result = self.__execute_command(command, include_selected_serial=False)
         devices = result.split(&#34;\n&#34;)[1:]
-        Logger.info(f&#39;There are {len(devices)} connected devices&#39;)
+        Logger.info(f&#39;There are [bold green]{len(devices)}[/bold green] connected devices&#39;)
         for i, device in enumerate(devices):
             data = device.split()
             serial_number = data[0]
-            ip = serial_number.split(&#39;:&#39;)[0]
-            state = data[1]
-            description = {}
-            for meta in data[2:]:
-                meta_pairs = meta.split(&#39;:&#39;)
-                if len(meta_pairs) == 2:
-                    description[meta_pairs[0]] = meta_pairs[1]
-            self.__devices.append({&#39;ip&#39;: ip, &#39;serial_number&#39;: serial_number, &#39;state&#39;: state, &#39;description&#39;: description})
+            self.__devices.append(serial_number)
             if self.__verbose:
-                Logger.print(f&#39;[bold green]Device[/bold green]: [yellow]{i+1}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]IP address[/bold green]: [yellow]{ip}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]Serial number[/bold green]: [yellow]{serial_number}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]State[/bold green]: [yellow]{state}[/yellow]&#39;)
-                for key, val in description.items():
-                    Logger.print(f&#39;[bold green]{key.title()}[/bold green]: [yellow]{val}[/yellow]&#39;)
-                Logger.print(&#39;\n&#39;)
+                Logger.print(f&#39;[bold green]Device[/bold green] ({i+1}): [yellow]{serial_number}[/yellow]&#39;)
         return self.__devices
     
     
     
-    def select_device(self, device_serial: str):
+    def select_device(self, device_serial: str) -&gt; bool:
         &#34;&#34;&#34;
         The function selects a device based on its serial number.
         
         Args:
             device_serial (str): The `device_serial` parameter is a string that represents the serial
                 number of a device.
+        
+        Returns:
+            Boolean: True if the device is found and selected.
         &#34;&#34;&#34;
-        self.__selected_device = device_serial
+        if device_serial in self.__devices:
+            self.__selected_device = device_serial
+            Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Device: [bold blue]{device_serial}[/bold blue] is not found&#39;)
+            return False
+    
+    
+    
+    def get_selected_device(self) -&gt; str|None:
+        &#34;&#34;&#34;
+        Get current selected device.
+        
+        Returns:
+            Selected device serial number. `None` if no device found.
+        &#34;&#34;&#34;
+        if self.__selected_device:
+            Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+        else:
+            Logger.error(f&#39;No device found&#39;)
+        return self.__selected_device
         
         
         
-    def get_device_info(self) -&gt; dict:
+    def get_device_info(self) -&gt; dict|None:
         &#34;&#34;&#34;
         The function `get_device_info` retrieves device information.
         
         Returns:
-            Dictionary containing device information.
+            Dictionary containing device information. `None` if no device found.
         &#34;&#34;&#34;
-        results = self.__execute_command(&#39;getprop&#39;).split(&#39;\n&#39;)
+        if self.__selected_device is None:
+            return
         device_info = {}
+        results = self.execute_shell_command(&#39;getprop&#39;).split(&#39;\n&#39;)
         for data in results:
             match = re.match(r&#34;\[([^:]+)\]: \[([^:]+)\]&#34;, data)
             if match:
-                device_info[match.group(1)] = match.group(2)
+                prop = match.group(1)
+                value = match.group(2)
+                device_info[prop] = value
+                if self.__verbose:
+                    Logger.print(f&#39;[bold green]{prop}[/bold green]: [yellow]{value}[/yellow]&#39;)
         return device_info
        
        
        
-    def get_state(self) -&gt; str:
+    def get_state(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_state` returns the state of connected device.
         
         Returns:
-            String represents device state.
+            String represents device state. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(&#39;get-state&#39;)
+        if self.__selected_device is None:
+            return
+        device_state = self.__execute_command(&#39;get-state&#39;)
+        Logger.info(f&#39;Device: ({self.__selected_device}) state is {device_state}&#39;)
+        return device_state
 
 
 
-    def get_serialno(self) -&gt; str:
+    def get_serialno(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_serialno` returns the serial number of a selected device.
         
         Returns:
-            The method is returning the serial number of the selected device.
+            String represents device serial number of the selected device. `None` if no device found.
         &#34;&#34;&#34;
-        if self.__selected_device:
-            return self.__selected_device
-        self.__selected_device = self.__execute_command(&#39;get-serialno&#39;)
-        return self.__selected_device
+        if self.__selected_device is None:
+            return
+        device_serialno = self.__execute_command(&#39;get-serialno&#39;)
+        Logger.info(f&#39;Device Serial number: {device_serialno}&#39;)
+        return device_serialno
 
 
 
-    def get_devpath(self) -&gt; str:
+    def get_devpath(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_devpath` retrieves the device path of a connected Android device&#39;.
         
         Returns:
-            String represents the device path, for example usb:1-4.3 for usb connected device.
+            String represents the device path, for example usb:1-4.3 for usb connected device. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(&#39;get-devpath&#39;)
+        if self.__selected_device is None:
+            return
+        device_devpath = self.__execute_command(&#39;get-devpath&#39;)
+        Logger.info(f&#39;Device dev_path: {device_devpath}&#39;)
+        return device_devpath
     
     
     
-    def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; Any:
+    def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_ip_address` returns the device IP address of a specified network interface.
         
@@ -278,73 +409,24 @@ class ADBClient:
                 common interface name for wireless LAN connections on Linux-based systems. Defaults to wlan0
         
         Returns:
-            The IP address of the selected device.
+            The IP address of the selected device. `None` if no device found.
         &#34;&#34;&#34;
-        if self.__selected_device is not None:
-            return self.__selected_device.split(&#39;:&#39;)[0]
-        # if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
-        #     if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
-        #         return match_obj[1]
+        if self.__selected_device is None:
+            return
+        device_ip = &#39;&#39;
+        if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
+            if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
+                device_ip = match_obj[1]
+                Logger.info(f&#39;Device ip: {device_ip}&#39;)
+        return device_ip
     
     
 
-    # ------------------------------[ Connectivity Commands ]------------------------------
-
-
-
-    def is_connected(self, ip: str) -&gt; bool:
-        &#34;&#34;&#34;
-        The function checks if a device with a given IP address is connected to adb server.
-        
-        Args:
-            ip (str): The `ip` parameter is a string that represents an IP address.
-        
-        Returns:
-            Boolean value. It returns True if there is a device in the list of devices with the
-            specified IP address, and False otherwise.
-        &#34;&#34;&#34;
-        for device in self.__devices:
-            if device[&#39;ip&#39;] == ip:
-                return True
-        return False
-
-
-
-    def connect(self, ip: str):
-        &#34;&#34;&#34;
-        The function connects to an IP address and raises an error if the connection fails.
-        
-        Args:
-            ip (str): The `ip` parameter in the `connect` method is a string that represents the IP
-                address of the device you want to connect to.
-                
-        Raises:
-            RuntimeError
-        &#34;&#34;&#34;
-        result = self.__execute_command(f&#39;connect {ip}&#39;)
-        if &#34;failed&#34; in result:
-            raise RuntimeError(f&#34;Unable to connect to {ip}&#34;)
-        elif &#34;connected&#34; in result:
-            self.__selected_device = self.get_serialno()
-
-
-
-    def disconnect(self) -&gt; str:
-        &#34;&#34;&#34;
-        Disconnect device.
-        
-        Returns:
-            String of the disconnect process result.
-        &#34;&#34;&#34;
-        return self.__execute_command(&#39;disconnect&#39;)
-
-
- 
     # ------------------------------[ File Operations Commands ]------------------------------
 
 
 
-    def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; str:
+    def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; bool|None:
         &#34;&#34;&#34;
         Copy files and directories from the local device (computer) to
         a remote location on the device.
@@ -359,13 +441,23 @@ class ADBClient:
                 needed. Defaults to /data/local/tmp/
         
         Returns:
-            String of the file upload process result.
+            Boolean indicating whether the upload operation was successful. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(f&#39;push {local} {remote}&#39;)
+        if self.__selected_device is None:
+            return
+        Logger.info(f&#39;Uploading: [bold green]{local}[/bold green] to [bold green]{remote}[/bold green] ..&#39;)
+        result = self.__execute_command(f&#39;push {local} {remote}&#39;) 
+        if &#39;1 file pushed&#39; in result:
+            Logger.success(f&#39;File [bold blue]{local}[/bold blue] uploaded to [bold blue]{remote}[/bold blue] successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Uploading [bold blue]{local}[/bold blue] to [bold blue]{remote}[/bold blue] failed&#39;)
+            return False
+        
 
 
 
-    def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; str:
+    def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; bool|None:
         &#34;&#34;&#34;
         The function `pull` copies remote files and directories to a device, with an option to preserve
         file metadata like time stamp and mode.
@@ -381,21 +473,29 @@ class ADBClient:
                 and mode should be. Defaults to False
         
         Returns:
-            String of the file download process result.
+            Boolean indicating whether the download operation was successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;pull &#39;
         if preserve_meta:
             command += &#39;-k &#39;
         command += f&#39;{remote} {local}&#39;
-        return self.__execute_command(command)
-
+        Logger.info(f&#39;Downloading: [bold green]{remote}[/bold green] to [bold green]{local}[/bold green] ..&#39;)
+        result = self.__execute_command(command)
+        if &#39;1 file pulled,&#39; in result:
+            Logger.success(f&#39;File [bold blue]{remote}[/bold blue] downloaded to [bold blue]{local}[/bold blue] successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Downloading [bold blue]{remote}[/bold blue] to [bold blue]{local}[/bold blue] failed&#39;)
+            return False
 
 
     # ------------------------------[ Apps Operations Commands ]------------------------------
     
 
 
-    def is_installed(self, package_name: str) -&gt; bool:
+    def is_installed(self, package_name: str) -&gt; bool|None:
         &#34;&#34;&#34;
         The function checks if the specified package is installed or not.
         
@@ -403,14 +503,22 @@ class ADBClient:
             package_name (str): The name of the package, for example &#39;com.google.chrome&#39;
         
         Returns:
-            Boolean indicates if app is installed or not.
+            Boolean indicates if app is installed or not. `None` if no device found.
         &#34;&#34;&#34;
-        command = f&#39;pm list packages | grep {package_name}&#39;
-        return len(self.execute_shell_command(command)) &gt; 0
+        if self.__selected_device is None:
+            return
+        command = f&#39;pm list packages&#39;
+        app_installed =  package_name in self.execute_shell_command(command)
+        if app_installed:
+            Logger.success(f&#39;App [bold blue]{package_name}[/bold blue] is installed&#39;)
+            return True
+        else:
+            Logger.error(f&#39;App [bold blue]{package_name}[/bold blue] is not installed&#39;)
+            return False
         
         
         
-    def install(self, apk_file: str, replace: bool=True) -&gt; str:
+    def install(self, apk_file: str, replace: bool=True) -&gt; bool|None:
         &#34;&#34;&#34;
         The function installs an APK file on a device, with an option to replace/update an existing
         installation.
@@ -424,17 +532,26 @@ class ADBClient:
                 not be replaced and an error will. Defaults to True
         
         Returns:
-            String of the app installation process result.
+            Boolean indicates if installation process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;install &#39;
         if replace:
             command += &#39;-r &#39;
         command += apk_file
-        return self.__execute_command(command)
+        Logger.info(f&#39;Installing APK file [bold green]{apk_file}[/bold green], it will took up to 2 minutes to complete..&#39;)
+        result = self.__execute_command(command)
+        if &#39;Success&#39; in result:
+            Logger.success(f&#39;APK [bold blue]{apk_file}[/bold blue] is installed successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Installation process failed&#39;)
+            return False
 
 
 
-    def uninstall(self, package: str, keep_data: bool=False) -&gt; str:
+    def uninstall(self, package: str, keep_data: bool=False) -&gt; bool|None:
         &#34;&#34;&#34;
         The `uninstall` function removes an app package from a device, with an option to keep the data
         and cache directories.
@@ -448,17 +565,29 @@ class ADBClient:
                 to False
         
         Returns:
-            String of the app removal process result.
+            Boolean indicates if uninstallation process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;uninstall &#39;
         if keep_data:
             command += &#39;-k &#39;
         command += package
-        return self.__execute_command(command)
+        message = f&#39;Uninstalling package [bold green]{package}[/bold green]&#39;
+        message += &#39;while keeping the data&#39; if keep_data else &#39;&#39;
+        message += &#39;, it will took up to 2 minutes to complete..&#39;
+        Logger.info(message)
+        result = self.__execute_command(command)
+        if &#39;Success&#39; in result:
+            Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Uninstallation process failed&#39;)
+            return False
     
     
     
-    def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; str:
+    def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; bool|None:
         &#34;&#34;&#34;
         The function starts an Android app with the specified package and activity, optionally waiting
         for the launch to complete and stopping the app before starting the activity.
@@ -481,8 +610,14 @@ class ADBClient:
                 Defaults to True
         
         Returns:
-            String of the app launch process result.
+            Boolean indicates if app starting process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
+        # check if app is installed
+        if not self.is_installed(package):
+            return False
+        self.send_keyevent_input(KeyCodes.KEYCODE_HOME)
         command = &#39;am start &#39;
         # wait for launch to complete
         if wait:
@@ -490,11 +625,18 @@ class ADBClient:
         if stop: # force stop the target app before starting the activity
             command += &#39;-S &#39;
         command += f&#39;{package}/{activity}&#39;
-        return self.execute_shell_command(command)
+        Logger.info(f&#39;Starting app: [bold green]{package}[/bold green] ..&#39;)
+        result = self.execute_shell_command(command)
+        if &#39;Error&#39; in result:
+            Logger.error(f&#39;Starting app [bold blue]{package}[/bold blue] failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;App: [bold blue]{package}[/bold blue] started successfully&#39;)
+            return True
 
 
 
-    def stop_app(self, package: str) -&gt; str:
+    def stop_app(self, package: str) -&gt; bool|None:
         &#34;&#34;&#34;
         The function stops an Android app with the specified package.
         
@@ -503,13 +645,22 @@ class ADBClient:
                 you want to stop.
         
         Returns:
-            String of the app stopping process result.
+            Boolean indicates if app stopping process is successful. `None` if no device found.
         &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am force-stop {package}&#39;)
+        if self.__selected_device is None:
+            return
+        Logger.info(f&#39;Stopping app: [bold green]{package}[/bold green] ..&#39;)
+        result =  self.execute_shell_command(f&#39;am force-stop {package}&#39;)
+        if &#39;Error&#39; in result:
+            Logger.error(f&#39;Stopping app [bold blue]{package}[/bold blue] failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;App: [bold blue]{package}[/bold blue] stopped successfully&#39;)
+            return True
 
 
 
-    def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list:
+    def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list|None:
         &#34;&#34;&#34;
         The function &#34;list_packages&#34; lists device android packages, you can also filter package type.
         
@@ -520,47 +671,53 @@ class ADBClient:
                 Defaults to all
         
         Returns:
-            List of packages.
+            List of packages. `None` if no device found.
         &#34;&#34;&#34;
-        package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
-        if package_type not in package_type_flags:
-            package_type = &#39;all&#39;
-        results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
-        packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
-        if self.__verbose:
-            for package in packages:
-                Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
+        if self.__selected_device is None:
+            return
+        packages = []
+        if self.__selected_device:
+            package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
+            if package_type not in package_type_flags:
+                package_type = &#39;all&#39;
+            results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
+            packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
+            Logger.info(f&#39;There are [bold green]{len(packages)}[/bold green] [bold blue]{package_type}[/bold blue] packages&#39;)
+            if self.__verbose:
+                for package in packages:
+                    Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
         return packages
     
     
     
-    def get_package_activities(self, package: str) -&gt; list:
+    def get_package_activities(self, package: str) -&gt; list|None:
         &#34;&#34;&#34;
         The function `get_package_activities` retrieves the activities associated with a given package
-        in order to start the app.
+        in order to start the app. this is useful to be able to start the app
         
         Args:
             package (str): The &#34;package&#34; parameter is a string that represents the name of the package for
                 which you want to retrieve the activities.
         
         Returns:
-            List of package activities.
+            List of package activities. `None` if no device found.
         &#34;&#34;&#34;
-        &#39;&#39;&#39;Get package activities, this is useful to be able to start the app&#39;&#39;&#39;
+        if self.__selected_device is None:
+            return
         results = self.execute_shell_command(f&#39;dumpsys package {package}&#39;).split()
-        activities = set()
+        activities = []
         for res in results:
-            if &#39;activity&#39; in res.lower() and &#39;com&#39; in res.lower():
-                activities.add(res.replace(&#39;&#34;&#39;, &#39;&#39;).strip())
-        return list(activities)
-
-
-
-    # def kill_all(self):
-    #     &#34;&#34;&#34;
-    #     Kill all background processes.
-    #     &#34;&#34;&#34;
-    #     return self.execute_shell_command(&#39;am kill-all&#39;)
+            if f&#39;{package}/&#39; in res:
+                activity = res.replace(&#39;&#34;&#39;, &#39;&#39;).replace(&#39;:&#39;, &#39;&#39;).replace(&#39;}&#39;, &#39;&#39;).strip()
+                activities.append(activity)
+                if self.__verbose:
+                    Logger.print(f&#39;[bold green]{activity}[/bold green]&#39;)
+        unique_activities = []
+        for activity in activities:
+            if activity not in unique_activities and activity.startswith(package):
+                unique_activities.append(activity) 
+        Logger.info(f&#39;There are [bold green]{len(unique_activities)}[/bold green] activities for package: {package}&#39;)
+        return unique_activities
 
 
 
@@ -568,7 +725,7 @@ class ADBClient:
 
 
 
-    def reboot(self, mode: str|None=None) -&gt; str:
+    def reboot(self, mode: str|None=None) -&gt; bool|None:
         &#34;&#34;&#34;
         The function `reboot` reboots the device with the specified mode, or with no mode if none is
         provided.
@@ -578,12 +735,21 @@ class ADBClient:
                 perform. It can have one of the following values: [bootloader | recovery | sideload | sideload-auto-reboot]
         
         Returns:
-            The method is returning the result of executing the reboot command on the device.
+            Boolean indicates if tv is rebooted successfully. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;reboot &#39;
         if mode:
             command += mode
-        return self.__execute_command(command)
+        Logger.info(f&#39;Rebooting TV&#39; + f&#39; in mode [bold green]{mode}[bold green]&#39; if mode else &#39;&#39; + &#39; ..&#39;)
+        result =  self.__execute_command(command)
+        if &#39;error&#39; in result:
+            Logger.error(f&#39;Rebooting failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;Rebooted successfully&#39;)
+            return True
     
     
     
@@ -602,85 +768,22 @@ class ADBClient:
 
 
 
-    # ------------------------------[ Services Commands ]------------------------------
-    
-
-
-    def list_services(self) -&gt; list:
-        &#34;&#34;&#34;
-        The `list_services` function retrieves a list of services along with their IDs, names, and
-        associated packages.
-        
-        Returns:
-            List of dictionaries, where each dictionary represents a service. Each dictionary contains
-            the following keys: &#39;id&#39; (integer), &#39;name&#39; (string), and &#39;package&#39; (string).
-        &#34;&#34;&#34;
-        results = self.execute_shell_command(&#39;service list&#39;)
-        lines = results.split(&#34;\n&#34;)
-        lines = lines[1:]
-        services = []
-        pattern = r&#34;(\d+)\t(\w+):\s+\[(.*?)\]&#34;
-        for line in lines:
-            if match := re.search(pattern, line):
-                service_id = int(match[1])
-                service_name = match[2]
-                service_process = match[3]
-                service_info = {&#39;id&#39;: service_id, &#39;name&#39;: service_name, &#39;package&#39;: service_process}
-                services.append(service_info)
-        return services
-
-
-
-    def start_service(self, service: str) -&gt; str:
-        &#34;&#34;&#34;
-        The function executes an adb shell command to start a service.
-        
-        Args:
-            service (str): The `service` parameter is a string that represents service name that you
-                want to start.
-        
-        Returns:
-            String of the output results of service starting processing.
-        &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am startservice {service}&#39;)
-
-
-
-    def stop_service(self, service: str) -&gt; str:
-        &#34;&#34;&#34;
-        The function executes an adb shell command to stop a running service.
-        
-        Args:
-            service (str): The `service` parameter is a string that represents service name that you
-                want to stop.
-        
-        Returns:
-            String of the output results of service stopping processing.
-        &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am stopservice {service}&#39;)
-        # return self.execute_shell_command(f&#39;am force-stop {service}&#39;)
-
-
-
     # ------------------------------[ Inputs Commands ]------------------------------
 
 
 
-    def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False) -&gt; str:
+    def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False):
         &#34;&#34;&#34;
         The function executes an adb shell command to send key event input that simulates pressing button keys.
         
         Args:
             keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
             long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
-        
-        Returns:
-            String of the output results of sending input.
         &#34;&#34;&#34;
         command = f&#39;input keyevent {keycode.name}&#39;
         if long_press:
-            command += &#39;--longpress&#39;
-        return self.execute_shell_command(command)
+            command += &#39; --longpress&#39;
+        self.execute_shell_command(command)
     
     
     
@@ -691,13 +794,9 @@ class ADBClient:
         Args:
             text (str): the text string to send.
             encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
-        
-        Returns:
-            String of the output results of sending input.
         &#34;&#34;&#34;
-        &#39;&#39;&#39;Send text.&#39;&#39;&#39;
         processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
-        return self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
+        self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>
 </section>
 <section>
@@ -709,36 +808,31 @@ class ADBClient:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="AndroidTVController.adb_client.ADBClient"><code class="flex name class">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient"><code class="flex name class">
 <span>class <span class="ident">ADBClient</span></span>
 <span>(</span><span>verbose: bool = False, show_command: bool = False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Pythonic way to interact with adb commands.</p>
+<div class="desc"><p>Pythonic way to execute adb commands on Android TV devices.</p>
 <p>The ADBClient class is used to interact with the ADB command-line tool in Python, allowing for
-communication with Android devices.
-1-Before running
-You need Android Platform Tools installed and available on your PATH environment variable.
-<a href="https://developer.android.com/studio/releases/platform-tools#download">https://developer.android.com/studio/releases/platform-tools#download</a>
-Ensure you run <code>adb tcpip 5555</code> to enable TCP mode.
-2-ADB commands references
-<a href="https://developer.android.com/tools/adb">https://developer.android.com/tools/adb</a>
-<a href="https://developer.android.com/studio/command-line/adb">https://developer.android.com/studio/command-line/adb</a>
-<a href="https://technastic.com/set-up-adb-over-wifi-android/">https://technastic.com/set-up-adb-over-wifi-android/</a>
-<a href="https://technastic.com/adb-shell-commands-list/">https://technastic.com/adb-shell-commands-list/</a>
-<a href="https://technastic.com/adb-commands-list-adb-cheat-sheet/">https://technastic.com/adb-commands-list-adb-cheat-sheet/</a></p>
+communication with Android TV devices in TCP Wireless mode.
+1-Before running you need Android Platform Tools installed and available on your PATH environment variable.
+<code>https://developer.android.com/studio/releases/platform-tools#download</code>
+2-Make sure your computer running the python library and the android device is on the same network.
+3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
+you can follow this link <code>https://www.makeuseof.com/how-to-use-adb-on-android-tv/</code></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code></dt>
 <dd>The <code>verbose</code> parameter is a boolean flag that determines whether or not to
 enable verbose logging. If set to <code>True</code>, it will display additional information during the
 execution of the code. If set to <code>False</code> (default), it will not display any additional
-information. Defaults to False</dd>
+information. Defaults to False.</dd>
 <dt><strong><code>show_command</code></strong> :&ensp;<code>bool</code></dt>
 <dd>The <code>show_command</code> parameter is a boolean flag that determines whether or
 not to display the executed ADB commands. If <code>show_command</code> is set to <code>True</code>, the executed ADB
 commands will be shown. If <code>show_command</code> is set to <code>False</code>, the executed ADB commands will.
-Defaults to False</dd>
+Defaults to False.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -749,30 +843,25 @@ Defaults to False</dd>
 
 
     def __init__(self, verbose: bool=False, show_command: bool=False):
-        &#34;&#34;&#34;Pythonic way to interact with adb commands.
+        &#34;&#34;&#34;Pythonic way to execute adb commands on Android TV devices.
         
         The ADBClient class is used to interact with the ADB command-line tool in Python, allowing for
-        communication with Android devices.
-        1-Before running
-            You need Android Platform Tools installed and available on your PATH environment variable.
-            https://developer.android.com/studio/releases/platform-tools#download
-            Ensure you run `adb tcpip 5555` to enable TCP mode.
-        2-ADB commands references
-            https://developer.android.com/tools/adb
-            https://developer.android.com/studio/command-line/adb
-            https://technastic.com/set-up-adb-over-wifi-android/
-            https://technastic.com/adb-shell-commands-list/
-            https://technastic.com/adb-commands-list-adb-cheat-sheet/
+        communication with Android TV devices in TCP Wireless mode.
+        1-Before running you need Android Platform Tools installed and available on your PATH environment variable.
+            `https://developer.android.com/studio/releases/platform-tools#download`
+        2-Make sure your computer running the python library and the android device is on the same network.
+        3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
+            you can follow this link `https://www.makeuseof.com/how-to-use-adb-on-android-tv/`
         
         Args:
             verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
                 enable verbose logging. If set to `True`, it will display additional information during the
                 execution of the code. If set to `False` (default), it will not display any additional
-                information. Defaults to False
+                information. Defaults to False.
             show_command (bool): The `show_command` parameter is a boolean flag that determines whether or
                 not to display the executed ADB commands. If `show_command` is set to `True`, the executed ADB
                 commands will be shown. If `show_command` is set to `False`, the executed ADB commands will.
-                Defaults to False
+                Defaults to False.
         &#34;&#34;&#34;
         # logs verbose 
         self.__verbose = verbose
@@ -791,7 +880,7 @@ Defaults to False</dd>
 
 
     
-    def __execute_command(self, command_str: str, blocking: bool=True) -&gt; Any:
+    def __execute_command(self, command_str: str, blocking: bool=True, include_selected_serial: bool=True) -&gt; Any:
         &#34;&#34;&#34;
         The function executes a shell command using the adb tool, with the option to run it in blocking
         or non-blocking mode.
@@ -801,24 +890,45 @@ Defaults to False</dd>
                 to be executed. It can be any valid adb command or a combination of adb commands.
             blocking (bool): The `blocking` parameter is a boolean flag that determines whether the
                 command should be executed synchronously (blocking) or asynchronously (non-blocking). Defaults
-                to True
+                to True.
+            include_selected_serial (bool): Whether to include selected device serial in the command, Defaults 
+                to True.
 
         Returns:
             The method `__execute_command` returns the output of the shell command that is executed. If
             the `blocking` parameter is set to `True`, it returns the stdout of the command as a string. If
             `blocking` is set to `False`, it returns a `subprocess.Popen` object.
+            
+        Raises:
+            OSError: This occurs, for example, when trying to execute a non-existent file.
+            ValueError: will be raised if process is called with invalid arguments.
+            CalledProcessError: if the called process returns a non-zero return code.
+            TimeoutExpired: if the timeout expires before the process exits.
         &#34;&#34;&#34;
+        
+        # adb base command
         command = &#39;adb &#39;
-        if self.__selected_device is not None:
+        
+        # specify a device serial
+        if self.__selected_device and include_selected_serial:
             command += f&#39;-s {self.__selected_device} &#39;
+            
+        # append the command to base adb
         command += command_str
+        
+        # show executed command if needed
         if self.__verbose and self.__show_command:
-            Logger.info(f&#39;[bold]Command:[/bold] {command}&#39;)
+            Logger.info(f&#39;[bold]Command:[/bold] [blue]{command}[/blue]&#39;)
+            
+        # convert command string to list of splitted tokens
         command_parts = shlex.split(command, posix=&#34;win&#34; not in sys.platform)
+        
         if blocking:
+            # run the command and waits for full execution
             proc = subprocess.run(command_parts, check=True, capture_output=True, text=True)
             return proc.stdout.strip()
         else:
+            # run the process in background and continue the python script
             return subprocess.Popen(command_parts, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     
     
@@ -827,40 +937,127 @@ Defaults to False</dd>
 
 
 
-    def start_server(self):
+    def start_server(self) -&gt; bool:
         &#34;&#34;&#34;
-        The function starts an ADB server and waits for it to start up.
+        The function `start_server` starts an ADB server and waits for it to start up.
+        
+        Returns:
+            Boolean indicating whether the server is running or not.
         &#34;&#34;&#34;
-        command = &#39;start-server&#39;
-        if self.__verbose:
+        Logger.info(&#39;Starting ADB server..&#39;)
+        
+        # start the adb server as background process
+        self.__server_process = self.__execute_command(&#39;start-server&#39;, blocking=False, include_selected_serial=False)
+        
+        # give time to start up
+        time.sleep(5)
+        
+        if self.__server_process:
             Logger.success(&#39;ADB server is started&#39;)
-        self.__server_process = self.__execute_command(command, False)
-        time.sleep(5) # give time to start up
+            return True
+        else:
+            Logger.error(f&#39;Unable to start ADB server&#39;)
+            return False
 
 
 
-    def kill_server(self):
+    def kill_server(self) -&gt; bool:
         &#34;&#34;&#34;
         The function `kill_server` stops the ADB server and terminates any running server process.
+                
+        Returns:
+            Boolean indicating whether the server is stopped or not.
         &#34;&#34;&#34;
-        command = &#39;kill-server&#39;
-        self.__execute_command(command)
+        Logger.info(&#39;Stopping ADB server..&#39;)
+        self.__execute_command(&#39;kill-server&#39;, include_selected_serial=False)
         if self.__server_process:
             self.__server_process.terminate()
-        self.clean()
-        if self.__verbose:
+            self.__server_process = None
+            self.clean()
             Logger.success(&#39;ADB server is stopped&#39;)
+            return True
+        else:
+            Logger.error(f&#39;No ADB server process running&#39;)
+            return False
     
     
     
     def clean(self):
         &#34;&#34;&#34;Resets and clean&#34;&#34;&#34;
+        Logger.info(&#39;Cleaning up&#39;)
         self.__devices = []
         self.__selected_device = None
         self.__server_process = None
 
 
 
+    # ------------------------------[ Connectivity Commands ]------------------------------
+
+
+
+    def connect(self, ip: str) -&gt; bool:
+        &#34;&#34;&#34;
+        The function connects to an IP address and raises an error if the connection fails.
+        
+        Args:
+            ip (str): The `ip` parameter in the `connect` method is a string that represents the IP
+                address of the device you want to connect.
+        
+        Returns:
+            Boolean: True if the connection succeeded, False if the connection failed.
+        &#34;&#34;&#34;
+        Logger.info(f&#39;Connecting to [bold green]{ip}[/bold green] ..&#39;)
+        result = self.__execute_command(f&#39;connect {ip}&#39;, include_selected_serial=False)
+        if &#34;connected&#34; in result:
+            self.__devices = self.get_devices()
+            self.__selected_device = self.__devices[-1]
+            Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is connected successfully&#39;)
+            return True
+        else: # &#34;failed&#34; in result
+            Logger.error(f&#39;Connection with [bold blue]{ip}[/bold blue] failed&#39;)
+            return False
+    
+
+
+    def is_connected(self, ip: str) -&gt; bool:
+        &#34;&#34;&#34;
+        The function checks if a device with a given IP address is connected to adb server.
+        
+        Args:
+            ip (str): The `ip` parameter is a string that represents an IP address.
+        
+        Returns:
+            Boolean value. It returns True if there is a device in the list of devices with the
+            specified IP address, and False otherwise.
+        &#34;&#34;&#34;
+        for device in self.__devices:
+            if device.split(&#39;:&#39;)[0] == ip:
+                Logger.success(f&#39;Device: [bold blue]{ip}[/bold blue] is connected&#39;)
+                return True
+        Logger.error(f&#39;Device [bold blue]{ip}[/bold blue] is not connected&#39;)
+        return False
+
+
+
+    def disconnect(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Disconnect selected device.
+        
+        Returns:
+            Boolean: True if the device is disconnected.
+        &#34;&#34;&#34;
+        Logger.info(f&#39;Disconnecting device..&#39;)
+        if &#39;disconnected&#39; in self.__execute_command(&#39;disconnect&#39;):
+            self.__devices = self.get_devices()
+            self.__selected_device = None
+            Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is disconnected&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Error while disconnecting device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+            return False
+
+
+ 
     # ------------------------------[ Info Commands ]------------------------------
     
     
@@ -881,101 +1078,129 @@ Defaults to False</dd>
             connected device. Each dictionary contains the following keys: &#39;ip&#39;, &#39;serial_number&#39;, &#39;state&#39;,
             and &#39;description&#39;.
         &#34;&#34;&#34;
+        Logger.info(f&#39;Getting connected devices..&#39;)
+        self.__devices = []
         command = &#39;devices&#39;
         if include_descriptions:
             command += &#39; -l&#39;
-        result = self.__execute_command(command)
+        result = self.__execute_command(command, include_selected_serial=False)
         devices = result.split(&#34;\n&#34;)[1:]
-        Logger.info(f&#39;There are {len(devices)} connected devices&#39;)
+        Logger.info(f&#39;There are [bold green]{len(devices)}[/bold green] connected devices&#39;)
         for i, device in enumerate(devices):
             data = device.split()
             serial_number = data[0]
-            ip = serial_number.split(&#39;:&#39;)[0]
-            state = data[1]
-            description = {}
-            for meta in data[2:]:
-                meta_pairs = meta.split(&#39;:&#39;)
-                if len(meta_pairs) == 2:
-                    description[meta_pairs[0]] = meta_pairs[1]
-            self.__devices.append({&#39;ip&#39;: ip, &#39;serial_number&#39;: serial_number, &#39;state&#39;: state, &#39;description&#39;: description})
+            self.__devices.append(serial_number)
             if self.__verbose:
-                Logger.print(f&#39;[bold green]Device[/bold green]: [yellow]{i+1}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]IP address[/bold green]: [yellow]{ip}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]Serial number[/bold green]: [yellow]{serial_number}[/yellow]&#39;)
-                Logger.print(f&#39;[bold green]State[/bold green]: [yellow]{state}[/yellow]&#39;)
-                for key, val in description.items():
-                    Logger.print(f&#39;[bold green]{key.title()}[/bold green]: [yellow]{val}[/yellow]&#39;)
-                Logger.print(&#39;\n&#39;)
+                Logger.print(f&#39;[bold green]Device[/bold green] ({i+1}): [yellow]{serial_number}[/yellow]&#39;)
         return self.__devices
     
     
     
-    def select_device(self, device_serial: str):
+    def select_device(self, device_serial: str) -&gt; bool:
         &#34;&#34;&#34;
         The function selects a device based on its serial number.
         
         Args:
             device_serial (str): The `device_serial` parameter is a string that represents the serial
                 number of a device.
+        
+        Returns:
+            Boolean: True if the device is found and selected.
         &#34;&#34;&#34;
-        self.__selected_device = device_serial
+        if device_serial in self.__devices:
+            self.__selected_device = device_serial
+            Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Device: [bold blue]{device_serial}[/bold blue] is not found&#39;)
+            return False
+    
+    
+    
+    def get_selected_device(self) -&gt; str|None:
+        &#34;&#34;&#34;
+        Get current selected device.
+        
+        Returns:
+            Selected device serial number. `None` if no device found.
+        &#34;&#34;&#34;
+        if self.__selected_device:
+            Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+        else:
+            Logger.error(f&#39;No device found&#39;)
+        return self.__selected_device
         
         
         
-    def get_device_info(self) -&gt; dict:
+    def get_device_info(self) -&gt; dict|None:
         &#34;&#34;&#34;
         The function `get_device_info` retrieves device information.
         
         Returns:
-            Dictionary containing device information.
+            Dictionary containing device information. `None` if no device found.
         &#34;&#34;&#34;
-        results = self.__execute_command(&#39;getprop&#39;).split(&#39;\n&#39;)
+        if self.__selected_device is None:
+            return
         device_info = {}
+        results = self.execute_shell_command(&#39;getprop&#39;).split(&#39;\n&#39;)
         for data in results:
             match = re.match(r&#34;\[([^:]+)\]: \[([^:]+)\]&#34;, data)
             if match:
-                device_info[match.group(1)] = match.group(2)
+                prop = match.group(1)
+                value = match.group(2)
+                device_info[prop] = value
+                if self.__verbose:
+                    Logger.print(f&#39;[bold green]{prop}[/bold green]: [yellow]{value}[/yellow]&#39;)
         return device_info
        
        
        
-    def get_state(self) -&gt; str:
+    def get_state(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_state` returns the state of connected device.
         
         Returns:
-            String represents device state.
+            String represents device state. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(&#39;get-state&#39;)
+        if self.__selected_device is None:
+            return
+        device_state = self.__execute_command(&#39;get-state&#39;)
+        Logger.info(f&#39;Device: ({self.__selected_device}) state is {device_state}&#39;)
+        return device_state
 
 
 
-    def get_serialno(self) -&gt; str:
+    def get_serialno(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_serialno` returns the serial number of a selected device.
         
         Returns:
-            The method is returning the serial number of the selected device.
+            String represents device serial number of the selected device. `None` if no device found.
         &#34;&#34;&#34;
-        if self.__selected_device:
-            return self.__selected_device
-        self.__selected_device = self.__execute_command(&#39;get-serialno&#39;)
-        return self.__selected_device
+        if self.__selected_device is None:
+            return
+        device_serialno = self.__execute_command(&#39;get-serialno&#39;)
+        Logger.info(f&#39;Device Serial number: {device_serialno}&#39;)
+        return device_serialno
 
 
 
-    def get_devpath(self) -&gt; str:
+    def get_devpath(self) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_devpath` retrieves the device path of a connected Android device&#39;.
         
         Returns:
-            String represents the device path, for example usb:1-4.3 for usb connected device.
+            String represents the device path, for example usb:1-4.3 for usb connected device. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(&#39;get-devpath&#39;)
+        if self.__selected_device is None:
+            return
+        device_devpath = self.__execute_command(&#39;get-devpath&#39;)
+        Logger.info(f&#39;Device dev_path: {device_devpath}&#39;)
+        return device_devpath
     
     
     
-    def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; Any:
+    def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; str|None:
         &#34;&#34;&#34;
         The function `get_ip_address` returns the device IP address of a specified network interface.
         
@@ -985,73 +1210,24 @@ Defaults to False</dd>
                 common interface name for wireless LAN connections on Linux-based systems. Defaults to wlan0
         
         Returns:
-            The IP address of the selected device.
+            The IP address of the selected device. `None` if no device found.
         &#34;&#34;&#34;
-        if self.__selected_device is not None:
-            return self.__selected_device.split(&#39;:&#39;)[0]
-        # if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
-        #     if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
-        #         return match_obj[1]
+        if self.__selected_device is None:
+            return
+        device_ip = &#39;&#39;
+        if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
+            if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
+                device_ip = match_obj[1]
+                Logger.info(f&#39;Device ip: {device_ip}&#39;)
+        return device_ip
     
     
 
-    # ------------------------------[ Connectivity Commands ]------------------------------
-
-
-
-    def is_connected(self, ip: str) -&gt; bool:
-        &#34;&#34;&#34;
-        The function checks if a device with a given IP address is connected to adb server.
-        
-        Args:
-            ip (str): The `ip` parameter is a string that represents an IP address.
-        
-        Returns:
-            Boolean value. It returns True if there is a device in the list of devices with the
-            specified IP address, and False otherwise.
-        &#34;&#34;&#34;
-        for device in self.__devices:
-            if device[&#39;ip&#39;] == ip:
-                return True
-        return False
-
-
-
-    def connect(self, ip: str):
-        &#34;&#34;&#34;
-        The function connects to an IP address and raises an error if the connection fails.
-        
-        Args:
-            ip (str): The `ip` parameter in the `connect` method is a string that represents the IP
-                address of the device you want to connect to.
-                
-        Raises:
-            RuntimeError
-        &#34;&#34;&#34;
-        result = self.__execute_command(f&#39;connect {ip}&#39;)
-        if &#34;failed&#34; in result:
-            raise RuntimeError(f&#34;Unable to connect to {ip}&#34;)
-        elif &#34;connected&#34; in result:
-            self.__selected_device = self.get_serialno()
-
-
-
-    def disconnect(self) -&gt; str:
-        &#34;&#34;&#34;
-        Disconnect device.
-        
-        Returns:
-            String of the disconnect process result.
-        &#34;&#34;&#34;
-        return self.__execute_command(&#39;disconnect&#39;)
-
-
- 
     # ------------------------------[ File Operations Commands ]------------------------------
 
 
 
-    def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; str:
+    def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; bool|None:
         &#34;&#34;&#34;
         Copy files and directories from the local device (computer) to
         a remote location on the device.
@@ -1066,13 +1242,23 @@ Defaults to False</dd>
                 needed. Defaults to /data/local/tmp/
         
         Returns:
-            String of the file upload process result.
+            Boolean indicating whether the upload operation was successful. `None` if no device found.
         &#34;&#34;&#34;
-        return self.__execute_command(f&#39;push {local} {remote}&#39;)
+        if self.__selected_device is None:
+            return
+        Logger.info(f&#39;Uploading: [bold green]{local}[/bold green] to [bold green]{remote}[/bold green] ..&#39;)
+        result = self.__execute_command(f&#39;push {local} {remote}&#39;) 
+        if &#39;1 file pushed&#39; in result:
+            Logger.success(f&#39;File [bold blue]{local}[/bold blue] uploaded to [bold blue]{remote}[/bold blue] successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Uploading [bold blue]{local}[/bold blue] to [bold blue]{remote}[/bold blue] failed&#39;)
+            return False
+        
 
 
 
-    def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; str:
+    def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; bool|None:
         &#34;&#34;&#34;
         The function `pull` copies remote files and directories to a device, with an option to preserve
         file metadata like time stamp and mode.
@@ -1088,21 +1274,29 @@ Defaults to False</dd>
                 and mode should be. Defaults to False
         
         Returns:
-            String of the file download process result.
+            Boolean indicating whether the download operation was successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;pull &#39;
         if preserve_meta:
             command += &#39;-k &#39;
         command += f&#39;{remote} {local}&#39;
-        return self.__execute_command(command)
-
+        Logger.info(f&#39;Downloading: [bold green]{remote}[/bold green] to [bold green]{local}[/bold green] ..&#39;)
+        result = self.__execute_command(command)
+        if &#39;1 file pulled,&#39; in result:
+            Logger.success(f&#39;File [bold blue]{remote}[/bold blue] downloaded to [bold blue]{local}[/bold blue] successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Downloading [bold blue]{remote}[/bold blue] to [bold blue]{local}[/bold blue] failed&#39;)
+            return False
 
 
     # ------------------------------[ Apps Operations Commands ]------------------------------
     
 
 
-    def is_installed(self, package_name: str) -&gt; bool:
+    def is_installed(self, package_name: str) -&gt; bool|None:
         &#34;&#34;&#34;
         The function checks if the specified package is installed or not.
         
@@ -1110,14 +1304,22 @@ Defaults to False</dd>
             package_name (str): The name of the package, for example &#39;com.google.chrome&#39;
         
         Returns:
-            Boolean indicates if app is installed or not.
+            Boolean indicates if app is installed or not. `None` if no device found.
         &#34;&#34;&#34;
-        command = f&#39;pm list packages | grep {package_name}&#39;
-        return len(self.execute_shell_command(command)) &gt; 0
+        if self.__selected_device is None:
+            return
+        command = f&#39;pm list packages&#39;
+        app_installed =  package_name in self.execute_shell_command(command)
+        if app_installed:
+            Logger.success(f&#39;App [bold blue]{package_name}[/bold blue] is installed&#39;)
+            return True
+        else:
+            Logger.error(f&#39;App [bold blue]{package_name}[/bold blue] is not installed&#39;)
+            return False
         
         
         
-    def install(self, apk_file: str, replace: bool=True) -&gt; str:
+    def install(self, apk_file: str, replace: bool=True) -&gt; bool|None:
         &#34;&#34;&#34;
         The function installs an APK file on a device, with an option to replace/update an existing
         installation.
@@ -1131,17 +1333,26 @@ Defaults to False</dd>
                 not be replaced and an error will. Defaults to True
         
         Returns:
-            String of the app installation process result.
+            Boolean indicates if installation process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;install &#39;
         if replace:
             command += &#39;-r &#39;
         command += apk_file
-        return self.__execute_command(command)
+        Logger.info(f&#39;Installing APK file [bold green]{apk_file}[/bold green], it will took up to 2 minutes to complete..&#39;)
+        result = self.__execute_command(command)
+        if &#39;Success&#39; in result:
+            Logger.success(f&#39;APK [bold blue]{apk_file}[/bold blue] is installed successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Installation process failed&#39;)
+            return False
 
 
 
-    def uninstall(self, package: str, keep_data: bool=False) -&gt; str:
+    def uninstall(self, package: str, keep_data: bool=False) -&gt; bool|None:
         &#34;&#34;&#34;
         The `uninstall` function removes an app package from a device, with an option to keep the data
         and cache directories.
@@ -1155,17 +1366,29 @@ Defaults to False</dd>
                 to False
         
         Returns:
-            String of the app removal process result.
+            Boolean indicates if uninstallation process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;uninstall &#39;
         if keep_data:
             command += &#39;-k &#39;
         command += package
-        return self.__execute_command(command)
+        message = f&#39;Uninstalling package [bold green]{package}[/bold green]&#39;
+        message += &#39;while keeping the data&#39; if keep_data else &#39;&#39;
+        message += &#39;, it will took up to 2 minutes to complete..&#39;
+        Logger.info(message)
+        result = self.__execute_command(command)
+        if &#39;Success&#39; in result:
+            Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
+            return True
+        else:
+            Logger.error(f&#39;Uninstallation process failed&#39;)
+            return False
     
     
     
-    def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; str:
+    def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; bool|None:
         &#34;&#34;&#34;
         The function starts an Android app with the specified package and activity, optionally waiting
         for the launch to complete and stopping the app before starting the activity.
@@ -1188,8 +1411,14 @@ Defaults to False</dd>
                 Defaults to True
         
         Returns:
-            String of the app launch process result.
+            Boolean indicates if app starting process is successful. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
+        # check if app is installed
+        if not self.is_installed(package):
+            return False
+        self.send_keyevent_input(KeyCodes.KEYCODE_HOME)
         command = &#39;am start &#39;
         # wait for launch to complete
         if wait:
@@ -1197,11 +1426,18 @@ Defaults to False</dd>
         if stop: # force stop the target app before starting the activity
             command += &#39;-S &#39;
         command += f&#39;{package}/{activity}&#39;
-        return self.execute_shell_command(command)
+        Logger.info(f&#39;Starting app: [bold green]{package}[/bold green] ..&#39;)
+        result = self.execute_shell_command(command)
+        if &#39;Error&#39; in result:
+            Logger.error(f&#39;Starting app [bold blue]{package}[/bold blue] failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;App: [bold blue]{package}[/bold blue] started successfully&#39;)
+            return True
 
 
 
-    def stop_app(self, package: str) -&gt; str:
+    def stop_app(self, package: str) -&gt; bool|None:
         &#34;&#34;&#34;
         The function stops an Android app with the specified package.
         
@@ -1210,13 +1446,22 @@ Defaults to False</dd>
                 you want to stop.
         
         Returns:
-            String of the app stopping process result.
+            Boolean indicates if app stopping process is successful. `None` if no device found.
         &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am force-stop {package}&#39;)
+        if self.__selected_device is None:
+            return
+        Logger.info(f&#39;Stopping app: [bold green]{package}[/bold green] ..&#39;)
+        result =  self.execute_shell_command(f&#39;am force-stop {package}&#39;)
+        if &#39;Error&#39; in result:
+            Logger.error(f&#39;Stopping app [bold blue]{package}[/bold blue] failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;App: [bold blue]{package}[/bold blue] stopped successfully&#39;)
+            return True
 
 
 
-    def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list:
+    def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list|None:
         &#34;&#34;&#34;
         The function &#34;list_packages&#34; lists device android packages, you can also filter package type.
         
@@ -1227,47 +1472,53 @@ Defaults to False</dd>
                 Defaults to all
         
         Returns:
-            List of packages.
+            List of packages. `None` if no device found.
         &#34;&#34;&#34;
-        package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
-        if package_type not in package_type_flags:
-            package_type = &#39;all&#39;
-        results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
-        packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
-        if self.__verbose:
-            for package in packages:
-                Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
+        if self.__selected_device is None:
+            return
+        packages = []
+        if self.__selected_device:
+            package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
+            if package_type not in package_type_flags:
+                package_type = &#39;all&#39;
+            results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
+            packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
+            Logger.info(f&#39;There are [bold green]{len(packages)}[/bold green] [bold blue]{package_type}[/bold blue] packages&#39;)
+            if self.__verbose:
+                for package in packages:
+                    Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
         return packages
     
     
     
-    def get_package_activities(self, package: str) -&gt; list:
+    def get_package_activities(self, package: str) -&gt; list|None:
         &#34;&#34;&#34;
         The function `get_package_activities` retrieves the activities associated with a given package
-        in order to start the app.
+        in order to start the app. this is useful to be able to start the app
         
         Args:
             package (str): The &#34;package&#34; parameter is a string that represents the name of the package for
                 which you want to retrieve the activities.
         
         Returns:
-            List of package activities.
+            List of package activities. `None` if no device found.
         &#34;&#34;&#34;
-        &#39;&#39;&#39;Get package activities, this is useful to be able to start the app&#39;&#39;&#39;
+        if self.__selected_device is None:
+            return
         results = self.execute_shell_command(f&#39;dumpsys package {package}&#39;).split()
-        activities = set()
+        activities = []
         for res in results:
-            if &#39;activity&#39; in res.lower() and &#39;com&#39; in res.lower():
-                activities.add(res.replace(&#39;&#34;&#39;, &#39;&#39;).strip())
-        return list(activities)
-
-
-
-    # def kill_all(self):
-    #     &#34;&#34;&#34;
-    #     Kill all background processes.
-    #     &#34;&#34;&#34;
-    #     return self.execute_shell_command(&#39;am kill-all&#39;)
+            if f&#39;{package}/&#39; in res:
+                activity = res.replace(&#39;&#34;&#39;, &#39;&#39;).replace(&#39;:&#39;, &#39;&#39;).replace(&#39;}&#39;, &#39;&#39;).strip()
+                activities.append(activity)
+                if self.__verbose:
+                    Logger.print(f&#39;[bold green]{activity}[/bold green]&#39;)
+        unique_activities = []
+        for activity in activities:
+            if activity not in unique_activities and activity.startswith(package):
+                unique_activities.append(activity) 
+        Logger.info(f&#39;There are [bold green]{len(unique_activities)}[/bold green] activities for package: {package}&#39;)
+        return unique_activities
 
 
 
@@ -1275,7 +1526,7 @@ Defaults to False</dd>
 
 
 
-    def reboot(self, mode: str|None=None) -&gt; str:
+    def reboot(self, mode: str|None=None) -&gt; bool|None:
         &#34;&#34;&#34;
         The function `reboot` reboots the device with the specified mode, or with no mode if none is
         provided.
@@ -1285,12 +1536,21 @@ Defaults to False</dd>
                 perform. It can have one of the following values: [bootloader | recovery | sideload | sideload-auto-reboot]
         
         Returns:
-            The method is returning the result of executing the reboot command on the device.
+            Boolean indicates if tv is rebooted successfully. `None` if no device found.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = &#39;reboot &#39;
         if mode:
             command += mode
-        return self.__execute_command(command)
+        Logger.info(f&#39;Rebooting TV&#39; + f&#39; in mode [bold green]{mode}[bold green]&#39; if mode else &#39;&#39; + &#39; ..&#39;)
+        result =  self.__execute_command(command)
+        if &#39;error&#39; in result:
+            Logger.error(f&#39;Rebooting failed&#39;)
+            return False
+        else:
+            Logger.success(f&#39;Rebooted successfully&#39;)
+            return True
     
     
     
@@ -1309,85 +1569,22 @@ Defaults to False</dd>
 
 
 
-    # ------------------------------[ Services Commands ]------------------------------
-    
-
-
-    def list_services(self) -&gt; list:
-        &#34;&#34;&#34;
-        The `list_services` function retrieves a list of services along with their IDs, names, and
-        associated packages.
-        
-        Returns:
-            List of dictionaries, where each dictionary represents a service. Each dictionary contains
-            the following keys: &#39;id&#39; (integer), &#39;name&#39; (string), and &#39;package&#39; (string).
-        &#34;&#34;&#34;
-        results = self.execute_shell_command(&#39;service list&#39;)
-        lines = results.split(&#34;\n&#34;)
-        lines = lines[1:]
-        services = []
-        pattern = r&#34;(\d+)\t(\w+):\s+\[(.*?)\]&#34;
-        for line in lines:
-            if match := re.search(pattern, line):
-                service_id = int(match[1])
-                service_name = match[2]
-                service_process = match[3]
-                service_info = {&#39;id&#39;: service_id, &#39;name&#39;: service_name, &#39;package&#39;: service_process}
-                services.append(service_info)
-        return services
-
-
-
-    def start_service(self, service: str) -&gt; str:
-        &#34;&#34;&#34;
-        The function executes an adb shell command to start a service.
-        
-        Args:
-            service (str): The `service` parameter is a string that represents service name that you
-                want to start.
-        
-        Returns:
-            String of the output results of service starting processing.
-        &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am startservice {service}&#39;)
-
-
-
-    def stop_service(self, service: str) -&gt; str:
-        &#34;&#34;&#34;
-        The function executes an adb shell command to stop a running service.
-        
-        Args:
-            service (str): The `service` parameter is a string that represents service name that you
-                want to stop.
-        
-        Returns:
-            String of the output results of service stopping processing.
-        &#34;&#34;&#34;
-        return self.execute_shell_command(f&#39;am stopservice {service}&#39;)
-        # return self.execute_shell_command(f&#39;am force-stop {service}&#39;)
-
-
-
     # ------------------------------[ Inputs Commands ]------------------------------
 
 
 
-    def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False) -&gt; str:
+    def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False):
         &#34;&#34;&#34;
         The function executes an adb shell command to send key event input that simulates pressing button keys.
         
         Args:
             keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
             long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
-        
-        Returns:
-            String of the output results of sending input.
         &#34;&#34;&#34;
         command = f&#39;input keyevent {keycode.name}&#39;
         if long_press:
-            command += &#39;--longpress&#39;
-        return self.execute_shell_command(command)
+            command += &#39; --longpress&#39;
+        self.execute_shell_command(command)
     
     
     
@@ -1398,17 +1595,13 @@ Defaults to False</dd>
         Args:
             text (str): the text string to send.
             encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
-        
-        Returns:
-            String of the output results of sending input.
         &#34;&#34;&#34;
-        &#39;&#39;&#39;Send text.&#39;&#39;&#39;
         processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
-        return self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
+        self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="AndroidTVController.adb_client.ADBClient.clean"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.clean"><code class="name flex">
 <span>def <span class="ident">clean</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1419,13 +1612,14 @@ Defaults to False</dd>
 </summary>
 <pre><code class="python">def clean(self):
     &#34;&#34;&#34;Resets and clean&#34;&#34;&#34;
+    Logger.info(&#39;Cleaning up&#39;)
     self.__devices = []
     self.__selected_device = None
     self.__server_process = None</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.connect"><code class="name flex">
-<span>def <span class="ident">connect</span></span>(<span>self, ip: str)</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.connect"><code class="name flex">
+<span>def <span class="ident">connect</span></span>(<span>self, ip: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function connects to an IP address and raises an error if the connection fails.</p>
@@ -1433,54 +1627,73 @@ Defaults to False</dd>
 <dl>
 <dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
 <dd>The <code>ip</code> parameter in the <code>connect</code> method is a string that represents the IP
-address of the device you want to connect to.</dd>
+address of the device you want to connect.</dd>
 </dl>
-<h2 id="raises">Raises</h2>
-<p>RuntimeError</p></div>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Boolean</code></dt>
+<dd>True if the connection succeeded, False if the connection failed.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def connect(self, ip: str):
+<pre><code class="python">def connect(self, ip: str) -&gt; bool:
     &#34;&#34;&#34;
     The function connects to an IP address and raises an error if the connection fails.
     
     Args:
         ip (str): The `ip` parameter in the `connect` method is a string that represents the IP
-            address of the device you want to connect to.
-            
-    Raises:
-        RuntimeError
+            address of the device you want to connect.
+    
+    Returns:
+        Boolean: True if the connection succeeded, False if the connection failed.
     &#34;&#34;&#34;
-    result = self.__execute_command(f&#39;connect {ip}&#39;)
-    if &#34;failed&#34; in result:
-        raise RuntimeError(f&#34;Unable to connect to {ip}&#34;)
-    elif &#34;connected&#34; in result:
-        self.__selected_device = self.get_serialno()</code></pre>
+    Logger.info(f&#39;Connecting to [bold green]{ip}[/bold green] ..&#39;)
+    result = self.__execute_command(f&#39;connect {ip}&#39;, include_selected_serial=False)
+    if &#34;connected&#34; in result:
+        self.__devices = self.get_devices()
+        self.__selected_device = self.__devices[-1]
+        Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is connected successfully&#39;)
+        return True
+    else: # &#34;failed&#34; in result
+        Logger.error(f&#39;Connection with [bold blue]{ip}[/bold blue] failed&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.disconnect"><code class="name flex">
-<span>def <span class="ident">disconnect</span></span>(<span>self) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.disconnect"><code class="name flex">
+<span>def <span class="ident">disconnect</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Disconnect device.</p>
+<div class="desc"><p>Disconnect selected device.</p>
 <h2 id="returns">Returns</h2>
-<p>String of the disconnect process result.</p></div>
+<dl>
+<dt><code>Boolean</code></dt>
+<dd>True if the device is disconnected.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def disconnect(self) -&gt; str:
+<pre><code class="python">def disconnect(self) -&gt; bool:
     &#34;&#34;&#34;
-    Disconnect device.
+    Disconnect selected device.
     
     Returns:
-        String of the disconnect process result.
+        Boolean: True if the device is disconnected.
     &#34;&#34;&#34;
-    return self.__execute_command(&#39;disconnect&#39;)</code></pre>
+    Logger.info(f&#39;Disconnecting device..&#39;)
+    if &#39;disconnected&#39; in self.__execute_command(&#39;disconnect&#39;):
+        self.__devices = self.get_devices()
+        self.__selected_device = None
+        Logger.success(f&#39;Device: [bold blue]{self.__selected_device}[/bold blue] is disconnected&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Error while disconnecting device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.execute_shell_command"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.execute_shell_command"><code class="name flex">
 <span>def <span class="ident">execute_shell_command</span></span>(<span>self, command: str) ‑> str</span>
 </code></dt>
 <dd>
@@ -1511,34 +1724,40 @@ want to execute.</dd>
     return self.__execute_command(f&#39;shell {command}&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_device_info"><code class="name flex">
-<span>def <span class="ident">get_device_info</span></span>(<span>self) ‑> dict</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_device_info"><code class="name flex">
+<span>def <span class="ident">get_device_info</span></span>(<span>self) ‑> dict | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_device_info</code> retrieves device information.</p>
 <h2 id="returns">Returns</h2>
-<p>Dictionary containing device information.</p></div>
+<p>Dictionary containing device information. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_device_info(self) -&gt; dict:
+<pre><code class="python">def get_device_info(self) -&gt; dict|None:
     &#34;&#34;&#34;
     The function `get_device_info` retrieves device information.
     
     Returns:
-        Dictionary containing device information.
+        Dictionary containing device information. `None` if no device found.
     &#34;&#34;&#34;
-    results = self.__execute_command(&#39;getprop&#39;).split(&#39;\n&#39;)
+    if self.__selected_device is None:
+        return
     device_info = {}
+    results = self.execute_shell_command(&#39;getprop&#39;).split(&#39;\n&#39;)
     for data in results:
         match = re.match(r&#34;\[([^:]+)\]: \[([^:]+)\]&#34;, data)
         if match:
-            device_info[match.group(1)] = match.group(2)
+            prop = match.group(1)
+            value = match.group(2)
+            device_info[prop] = value
+            if self.__verbose:
+                Logger.print(f&#39;[bold green]{prop}[/bold green]: [yellow]{value}[/yellow]&#39;)
     return device_info</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_devices"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devices"><code class="name flex">
 <span>def <span class="ident">get_devices</span></span>(<span>self, include_descriptions: bool = True) ‑> list</span>
 </code></dt>
 <dd>
@@ -1579,57 +1798,50 @@ descriptions will be excluded. Defaults to True</dd>
         connected device. Each dictionary contains the following keys: &#39;ip&#39;, &#39;serial_number&#39;, &#39;state&#39;,
         and &#39;description&#39;.
     &#34;&#34;&#34;
+    Logger.info(f&#39;Getting connected devices..&#39;)
+    self.__devices = []
     command = &#39;devices&#39;
     if include_descriptions:
         command += &#39; -l&#39;
-    result = self.__execute_command(command)
+    result = self.__execute_command(command, include_selected_serial=False)
     devices = result.split(&#34;\n&#34;)[1:]
-    Logger.info(f&#39;There are {len(devices)} connected devices&#39;)
+    Logger.info(f&#39;There are [bold green]{len(devices)}[/bold green] connected devices&#39;)
     for i, device in enumerate(devices):
         data = device.split()
         serial_number = data[0]
-        ip = serial_number.split(&#39;:&#39;)[0]
-        state = data[1]
-        description = {}
-        for meta in data[2:]:
-            meta_pairs = meta.split(&#39;:&#39;)
-            if len(meta_pairs) == 2:
-                description[meta_pairs[0]] = meta_pairs[1]
-        self.__devices.append({&#39;ip&#39;: ip, &#39;serial_number&#39;: serial_number, &#39;state&#39;: state, &#39;description&#39;: description})
+        self.__devices.append(serial_number)
         if self.__verbose:
-            Logger.print(f&#39;[bold green]Device[/bold green]: [yellow]{i+1}[/yellow]&#39;)
-            Logger.print(f&#39;[bold green]IP address[/bold green]: [yellow]{ip}[/yellow]&#39;)
-            Logger.print(f&#39;[bold green]Serial number[/bold green]: [yellow]{serial_number}[/yellow]&#39;)
-            Logger.print(f&#39;[bold green]State[/bold green]: [yellow]{state}[/yellow]&#39;)
-            for key, val in description.items():
-                Logger.print(f&#39;[bold green]{key.title()}[/bold green]: [yellow]{val}[/yellow]&#39;)
-            Logger.print(&#39;\n&#39;)
+            Logger.print(f&#39;[bold green]Device[/bold green] ({i+1}): [yellow]{serial_number}[/yellow]&#39;)
     return self.__devices</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_devpath"><code class="name flex">
-<span>def <span class="ident">get_devpath</span></span>(<span>self) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devpath"><code class="name flex">
+<span>def <span class="ident">get_devpath</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_devpath</code> retrieves the device path of a connected Android device'.</p>
 <h2 id="returns">Returns</h2>
-<p>String represents the device path, for example usb:1-4.3 for usb connected device.</p></div>
+<p>String represents the device path, for example usb:1-4.3 for usb connected device. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_devpath(self) -&gt; str:
+<pre><code class="python">def get_devpath(self) -&gt; str|None:
     &#34;&#34;&#34;
     The function `get_devpath` retrieves the device path of a connected Android device&#39;.
     
     Returns:
-        String represents the device path, for example usb:1-4.3 for usb connected device.
+        String represents the device path, for example usb:1-4.3 for usb connected device. `None` if no device found.
     &#34;&#34;&#34;
-    return self.__execute_command(&#39;get-devpath&#39;)</code></pre>
+    if self.__selected_device is None:
+        return
+    device_devpath = self.__execute_command(&#39;get-devpath&#39;)
+    Logger.info(f&#39;Device dev_path: {device_devpath}&#39;)
+    return device_devpath</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_ip_address"><code class="name flex">
-<span>def <span class="ident">get_ip_address</span></span>(<span>self, interface: str = 'wlan0') ‑> Any</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_ip_address"><code class="name flex">
+<span>def <span class="ident">get_ip_address</span></span>(<span>self, interface: str = 'wlan0') ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_ip_address</code> returns the device IP address of a specified network interface.</p>
@@ -1641,12 +1853,12 @@ retrieve the IP address from. In this case, the default value is set to "wlan0",
 common interface name for wireless LAN connections on Linux-based systems. Defaults to wlan0</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>The IP address of the selected device.</p></div>
+<p>The IP address of the selected device. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; Any:
+<pre><code class="python">def get_ip_address(self, interface: str=&#39;wlan0&#39;) -&gt; str|None:
     &#34;&#34;&#34;
     The function `get_ip_address` returns the device IP address of a specified network interface.
     
@@ -1656,21 +1868,24 @@ common interface name for wireless LAN connections on Linux-based systems. Defau
             common interface name for wireless LAN connections on Linux-based systems. Defaults to wlan0
     
     Returns:
-        The IP address of the selected device.
+        The IP address of the selected device. `None` if no device found.
     &#34;&#34;&#34;
-    if self.__selected_device is not None:
-        return self.__selected_device.split(&#39;:&#39;)[0]
-    # if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
-    #     if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
-    #         return match_obj[1]</code></pre>
+    if self.__selected_device is None:
+        return
+    device_ip = &#39;&#39;
+    if result := self.execute_shell_command(f&#39;ifconfig {interface}&#39;):
+        if match_obj := re.search(r&#34;inet addr:(.+)  Bcast&#34;, result, re.M | re.I):
+            device_ip = match_obj[1]
+            Logger.info(f&#39;Device ip: {device_ip}&#39;)
+    return device_ip</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_package_activities"><code class="name flex">
-<span>def <span class="ident">get_package_activities</span></span>(<span>self, package: str) ‑> list</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_package_activities"><code class="name flex">
+<span>def <span class="ident">get_package_activities</span></span>(<span>self, package: str) ‑> list | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_package_activities</code> retrieves the activities associated with a given package
-in order to start the app.</p>
+in order to start the app. this is useful to be able to start the app</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>package</code></strong> :&ensp;<code>str</code></dt>
@@ -1678,79 +1893,118 @@ in order to start the app.</p>
 which you want to retrieve the activities.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>List of package activities.</p></div>
+<p>List of package activities. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_package_activities(self, package: str) -&gt; list:
+<pre><code class="python">def get_package_activities(self, package: str) -&gt; list|None:
     &#34;&#34;&#34;
     The function `get_package_activities` retrieves the activities associated with a given package
-    in order to start the app.
+    in order to start the app. this is useful to be able to start the app
     
     Args:
         package (str): The &#34;package&#34; parameter is a string that represents the name of the package for
             which you want to retrieve the activities.
     
     Returns:
-        List of package activities.
+        List of package activities. `None` if no device found.
     &#34;&#34;&#34;
-    &#39;&#39;&#39;Get package activities, this is useful to be able to start the app&#39;&#39;&#39;
+    if self.__selected_device is None:
+        return
     results = self.execute_shell_command(f&#39;dumpsys package {package}&#39;).split()
-    activities = set()
+    activities = []
     for res in results:
-        if &#39;activity&#39; in res.lower() and &#39;com&#39; in res.lower():
-            activities.add(res.replace(&#39;&#34;&#39;, &#39;&#39;).strip())
-    return list(activities)</code></pre>
+        if f&#39;{package}/&#39; in res:
+            activity = res.replace(&#39;&#34;&#39;, &#39;&#39;).replace(&#39;:&#39;, &#39;&#39;).replace(&#39;}&#39;, &#39;&#39;).strip()
+            activities.append(activity)
+            if self.__verbose:
+                Logger.print(f&#39;[bold green]{activity}[/bold green]&#39;)
+    unique_activities = []
+    for activity in activities:
+        if activity not in unique_activities and activity.startswith(package):
+            unique_activities.append(activity) 
+    Logger.info(f&#39;There are [bold green]{len(unique_activities)}[/bold green] activities for package: {package}&#39;)
+    return unique_activities</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_serialno"><code class="name flex">
-<span>def <span class="ident">get_serialno</span></span>(<span>self) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_selected_device"><code class="name flex">
+<span>def <span class="ident">get_selected_device</span></span>(<span>self) ‑> str | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get current selected device.</p>
+<h2 id="returns">Returns</h2>
+<p>Selected device serial number. <code>None</code> if no device found.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_selected_device(self) -&gt; str|None:
+    &#34;&#34;&#34;
+    Get current selected device.
+    
+    Returns:
+        Selected device serial number. `None` if no device found.
+    &#34;&#34;&#34;
+    if self.__selected_device:
+        Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+    else:
+        Logger.error(f&#39;No device found&#39;)
+    return self.__selected_device</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_serialno"><code class="name flex">
+<span>def <span class="ident">get_serialno</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_serialno</code> returns the serial number of a selected device.</p>
 <h2 id="returns">Returns</h2>
-<p>The method is returning the serial number of the selected device.</p></div>
+<p>String represents device serial number of the selected device. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_serialno(self) -&gt; str:
+<pre><code class="python">def get_serialno(self) -&gt; str|None:
     &#34;&#34;&#34;
     The function `get_serialno` returns the serial number of a selected device.
     
     Returns:
-        The method is returning the serial number of the selected device.
+        String represents device serial number of the selected device. `None` if no device found.
     &#34;&#34;&#34;
-    if self.__selected_device:
-        return self.__selected_device
-    self.__selected_device = self.__execute_command(&#39;get-serialno&#39;)
-    return self.__selected_device</code></pre>
+    if self.__selected_device is None:
+        return
+    device_serialno = self.__execute_command(&#39;get-serialno&#39;)
+    Logger.info(f&#39;Device Serial number: {device_serialno}&#39;)
+    return device_serialno</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.get_state"><code class="name flex">
-<span>def <span class="ident">get_state</span></span>(<span>self) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_state"><code class="name flex">
+<span>def <span class="ident">get_state</span></span>(<span>self) ‑> str | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_state</code> returns the state of connected device.</p>
 <h2 id="returns">Returns</h2>
-<p>String represents device state.</p></div>
+<p>String represents device state. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_state(self) -&gt; str:
+<pre><code class="python">def get_state(self) -&gt; str|None:
     &#34;&#34;&#34;
     The function `get_state` returns the state of connected device.
     
     Returns:
-        String represents device state.
+        String represents device state. `None` if no device found.
     &#34;&#34;&#34;
-    return self.__execute_command(&#39;get-state&#39;)</code></pre>
+    if self.__selected_device is None:
+        return
+    device_state = self.__execute_command(&#39;get-state&#39;)
+    Logger.info(f&#39;Device: ({self.__selected_device}) state is {device_state}&#39;)
+    return device_state</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.install"><code class="name flex">
-<span>def <span class="ident">install</span></span>(<span>self, apk_file: str, replace: bool = True) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.install"><code class="name flex">
+<span>def <span class="ident">install</span></span>(<span>self, apk_file: str, replace: bool = True) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function installs an APK file on a device, with an option to replace/update an existing
@@ -1767,12 +2021,12 @@ installation will be replaced. If <code>replace</code> is set to <code>False</co
 not be replaced and an error will. Defaults to True</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the app installation process result.</p></div>
+<p>Boolean indicates if installation process is successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def install(self, apk_file: str, replace: bool=True) -&gt; str:
+<pre><code class="python">def install(self, apk_file: str, replace: bool=True) -&gt; bool|None:
     &#34;&#34;&#34;
     The function installs an APK file on a device, with an option to replace/update an existing
     installation.
@@ -1786,16 +2040,25 @@ not be replaced and an error will. Defaults to True</dd>
             not be replaced and an error will. Defaults to True
     
     Returns:
-        String of the app installation process result.
+        Boolean indicates if installation process is successful. `None` if no device found.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     command = &#39;install &#39;
     if replace:
         command += &#39;-r &#39;
     command += apk_file
-    return self.__execute_command(command)</code></pre>
+    Logger.info(f&#39;Installing APK file [bold green]{apk_file}[/bold green], it will took up to 2 minutes to complete..&#39;)
+    result = self.__execute_command(command)
+    if &#39;Success&#39; in result:
+        Logger.success(f&#39;APK [bold blue]{apk_file}[/bold blue] is installed successfully&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Installation process failed&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.is_connected"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_connected"><code class="name flex">
 <span>def <span class="ident">is_connected</span></span>(<span>self, ip: str) ‑> bool</span>
 </code></dt>
 <dd>
@@ -1824,13 +2087,15 @@ specified IP address, and False otherwise.</p></div>
         specified IP address, and False otherwise.
     &#34;&#34;&#34;
     for device in self.__devices:
-        if device[&#39;ip&#39;] == ip:
+        if device.split(&#39;:&#39;)[0] == ip:
+            Logger.success(f&#39;Device: [bold blue]{ip}[/bold blue] is connected&#39;)
             return True
+    Logger.error(f&#39;Device [bold blue]{ip}[/bold blue] is not connected&#39;)
     return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.is_installed"><code class="name flex">
-<span>def <span class="ident">is_installed</span></span>(<span>self, package_name: str) ‑> bool</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_installed"><code class="name flex">
+<span>def <span class="ident">is_installed</span></span>(<span>self, package_name: str) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function checks if the specified package is installed or not.</p>
@@ -1840,12 +2105,12 @@ specified IP address, and False otherwise.</p></div>
 <dd>The name of the package, for example 'com.google.chrome'</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Boolean indicates if app is installed or not.</p></div>
+<p>Boolean indicates if app is installed or not. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_installed(self, package_name: str) -&gt; bool:
+<pre><code class="python">def is_installed(self, package_name: str) -&gt; bool|None:
     &#34;&#34;&#34;
     The function checks if the specified package is installed or not.
     
@@ -1853,36 +2118,53 @@ specified IP address, and False otherwise.</p></div>
         package_name (str): The name of the package, for example &#39;com.google.chrome&#39;
     
     Returns:
-        Boolean indicates if app is installed or not.
+        Boolean indicates if app is installed or not. `None` if no device found.
     &#34;&#34;&#34;
-    command = f&#39;pm list packages | grep {package_name}&#39;
-    return len(self.execute_shell_command(command)) &gt; 0</code></pre>
+    if self.__selected_device is None:
+        return
+    command = f&#39;pm list packages&#39;
+    app_installed =  package_name in self.execute_shell_command(command)
+    if app_installed:
+        Logger.success(f&#39;App [bold blue]{package_name}[/bold blue] is installed&#39;)
+        return True
+    else:
+        Logger.error(f&#39;App [bold blue]{package_name}[/bold blue] is not installed&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.kill_server"><code class="name flex">
-<span>def <span class="ident">kill_server</span></span>(<span>self)</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server"><code class="name flex">
+<span>def <span class="ident">kill_server</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>The function <code>kill_server</code> stops the ADB server and terminates any running server process.</p></div>
+<div class="desc"><p>The function <code>kill_server</code> stops the ADB server and terminates any running server process.</p>
+<h2 id="returns">Returns</h2>
+<p>Boolean indicating whether the server is stopped or not.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def kill_server(self):
+<pre><code class="python">def kill_server(self) -&gt; bool:
     &#34;&#34;&#34;
     The function `kill_server` stops the ADB server and terminates any running server process.
+            
+    Returns:
+        Boolean indicating whether the server is stopped or not.
     &#34;&#34;&#34;
-    command = &#39;kill-server&#39;
-    self.__execute_command(command)
+    Logger.info(&#39;Stopping ADB server..&#39;)
+    self.__execute_command(&#39;kill-server&#39;, include_selected_serial=False)
     if self.__server_process:
         self.__server_process.terminate()
-    self.clean()
-    if self.__verbose:
-        Logger.success(&#39;ADB server is stopped&#39;)</code></pre>
+        self.__server_process = None
+        self.clean()
+        Logger.success(&#39;ADB server is stopped&#39;)
+        return True
+    else:
+        Logger.error(f&#39;No ADB server process running&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.list_packages"><code class="name flex">
-<span>def <span class="ident">list_packages</span></span>(<span>self, package_type: str = 'all') ‑> list</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.list_packages"><code class="name flex">
+<span>def <span class="ident">list_packages</span></span>(<span>self, package_type: str = 'all') ‑> list | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function "list_packages" lists device android packages, you can also filter package type.</p>
@@ -1895,12 +2177,12 @@ but it can also take the following values: [all | enabled | disabled | system | 
 Defaults to all</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>List of packages.</p></div>
+<p>List of packages. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list:
+<pre><code class="python">def list_packages(self, package_type: str=&#39;all&#39;) -&gt; list|None:
     &#34;&#34;&#34;
     The function &#34;list_packages&#34; lists device android packages, you can also filter package type.
     
@@ -1911,61 +2193,26 @@ Defaults to all</dd>
             Defaults to all
     
     Returns:
-        List of packages.
+        List of packages. `None` if no device found.
     &#34;&#34;&#34;
-    package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
-    if package_type not in package_type_flags:
-        package_type = &#39;all&#39;
-    results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
-    packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
-    if self.__verbose:
-        for package in packages:
-            Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
+    if self.__selected_device is None:
+        return
+    packages = []
+    if self.__selected_device:
+        package_type_flags = {&#39;all&#39;: &#39;&#39;, &#39;enabled&#39;: &#39;-e&#39;, &#39;disabled&#39;: &#39;-d&#39;, &#39;system&#39;: &#39;-s&#39;, &#39;third-party&#39;: &#39;-3&#39;}
+        if package_type not in package_type_flags:
+            package_type = &#39;all&#39;
+        results = self.execute_shell_command(f&#39;pm list packages {package_type_flags[package_type]}&#39;).split(&#34;\n&#34;)
+        packages = sorted([x.replace(&#39;package:&#39;, &#39;&#39;) for x in results])
+        Logger.info(f&#39;There are [bold green]{len(packages)}[/bold green] [bold blue]{package_type}[/bold blue] packages&#39;)
+        if self.__verbose:
+            for package in packages:
+                Logger.print(f&#39;[bold green]{package}[/bold green]&#39;)
     return packages</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.list_services"><code class="name flex">
-<span>def <span class="ident">list_services</span></span>(<span>self) ‑> list</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The <code>list_services</code> function retrieves a list of services along with their IDs, names, and
-associated packages.</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt>List of dictionaries, where each dictionary represents a service. Each dictionary contains</dt>
-<dt><code>the following keys</code></dt>
-<dd>'id' (integer), 'name' (string), and 'package' (string).</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def list_services(self) -&gt; list:
-    &#34;&#34;&#34;
-    The `list_services` function retrieves a list of services along with their IDs, names, and
-    associated packages.
-    
-    Returns:
-        List of dictionaries, where each dictionary represents a service. Each dictionary contains
-        the following keys: &#39;id&#39; (integer), &#39;name&#39; (string), and &#39;package&#39; (string).
-    &#34;&#34;&#34;
-    results = self.execute_shell_command(&#39;service list&#39;)
-    lines = results.split(&#34;\n&#34;)
-    lines = lines[1:]
-    services = []
-    pattern = r&#34;(\d+)\t(\w+):\s+\[(.*?)\]&#34;
-    for line in lines:
-        if match := re.search(pattern, line):
-            service_id = int(match[1])
-            service_name = match[2]
-            service_process = match[3]
-            service_info = {&#39;id&#39;: service_id, &#39;name&#39;: service_name, &#39;package&#39;: service_process}
-            services.append(service_info)
-    return services</code></pre>
-</details>
-</dd>
-<dt id="AndroidTVController.adb_client.ADBClient.pull"><code class="name flex">
-<span>def <span class="ident">pull</span></span>(<span>self, remote: str, local: str, preserve_meta: bool = False) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.pull"><code class="name flex">
+<span>def <span class="ident">pull</span></span>(<span>self, remote: str, local: str, preserve_meta: bool = False) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>pull</code> copies remote files and directories to a device, with an option to preserve
@@ -1985,12 +2232,12 @@ set to <code>True</code>, the <code>-k</code> option will be added to the comman
 and mode should be. Defaults to False</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the file download process result.</p></div>
+<p>Boolean indicating whether the download operation was successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; str:
+<pre><code class="python">def pull(self, remote: str, local: str, preserve_meta: bool=False) -&gt; bool|None:
     &#34;&#34;&#34;
     The function `pull` copies remote files and directories to a device, with an option to preserve
     file metadata like time stamp and mode.
@@ -2006,17 +2253,26 @@ and mode should be. Defaults to False</dd>
             and mode should be. Defaults to False
     
     Returns:
-        String of the file download process result.
+        Boolean indicating whether the download operation was successful. `None` if no device found.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     command = &#39;pull &#39;
     if preserve_meta:
         command += &#39;-k &#39;
     command += f&#39;{remote} {local}&#39;
-    return self.__execute_command(command)</code></pre>
+    Logger.info(f&#39;Downloading: [bold green]{remote}[/bold green] to [bold green]{local}[/bold green] ..&#39;)
+    result = self.__execute_command(command)
+    if &#39;1 file pulled,&#39; in result:
+        Logger.success(f&#39;File [bold blue]{remote}[/bold blue] downloaded to [bold blue]{local}[/bold blue] successfully&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Downloading [bold blue]{remote}[/bold blue] to [bold blue]{local}[/bold blue] failed&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.push"><code class="name flex">
-<span>def <span class="ident">push</span></span>(<span>self, local: str, remote: str = '/data/local/tmp/') ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.push"><code class="name flex">
+<span>def <span class="ident">push</span></span>(<span>self, local: str, remote: str = '/data/local/tmp/') ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Copy files and directories from the local device (computer) to
@@ -2034,12 +2290,12 @@ the destination location is set to <code>/data/local/tmp/</code>, but you can pr
 needed. Defaults to /data/local/tmp/</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the file upload process result.</p></div>
+<p>Boolean indicating whether the upload operation was successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; str:
+<pre><code class="python">def push(self, local: str, remote: str=&#39;/data/local/tmp/&#39;) -&gt; bool|None:
     &#34;&#34;&#34;
     Copy files and directories from the local device (computer) to
     a remote location on the device.
@@ -2054,13 +2310,22 @@ needed. Defaults to /data/local/tmp/</dd>
             needed. Defaults to /data/local/tmp/
     
     Returns:
-        String of the file upload process result.
+        Boolean indicating whether the upload operation was successful. `None` if no device found.
     &#34;&#34;&#34;
-    return self.__execute_command(f&#39;push {local} {remote}&#39;)</code></pre>
+    if self.__selected_device is None:
+        return
+    Logger.info(f&#39;Uploading: [bold green]{local}[/bold green] to [bold green]{remote}[/bold green] ..&#39;)
+    result = self.__execute_command(f&#39;push {local} {remote}&#39;) 
+    if &#39;1 file pushed&#39; in result:
+        Logger.success(f&#39;File [bold blue]{local}[/bold blue] uploaded to [bold blue]{remote}[/bold blue] successfully&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Uploading [bold blue]{local}[/bold blue] to [bold blue]{remote}[/bold blue] failed&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.reboot"><code class="name flex">
-<span>def <span class="ident">reboot</span></span>(<span>self, mode: str | None = None) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.reboot"><code class="name flex">
+<span>def <span class="ident">reboot</span></span>(<span>self, mode: str | None = None) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>reboot</code> reboots the device with the specified mode, or with no mode if none is
@@ -2069,12 +2334,12 @@ provided.</p>
 <p>mode (str|None): The <code>mode</code> parameter is a string that specifies the type of reboot to
 perform. It can have one of the following values: [bootloader | recovery | sideload | sideload-auto-reboot]</p>
 <h2 id="returns">Returns</h2>
-<p>The method is returning the result of executing the reboot command on the device.</p></div>
+<p>Boolean indicates if tv is rebooted successfully. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def reboot(self, mode: str|None=None) -&gt; str:
+<pre><code class="python">def reboot(self, mode: str|None=None) -&gt; bool|None:
     &#34;&#34;&#34;
     The function `reboot` reboots the device with the specified mode, or with no mode if none is
     provided.
@@ -2084,16 +2349,25 @@ perform. It can have one of the following values: [bootloader | recovery | sidel
             perform. It can have one of the following values: [bootloader | recovery | sideload | sideload-auto-reboot]
     
     Returns:
-        The method is returning the result of executing the reboot command on the device.
+        Boolean indicates if tv is rebooted successfully. `None` if no device found.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     command = &#39;reboot &#39;
     if mode:
         command += mode
-    return self.__execute_command(command)</code></pre>
+    Logger.info(f&#39;Rebooting TV&#39; + f&#39; in mode [bold green]{mode}[bold green]&#39; if mode else &#39;&#39; + &#39; ..&#39;)
+    result =  self.__execute_command(command)
+    if &#39;error&#39; in result:
+        Logger.error(f&#39;Rebooting failed&#39;)
+        return False
+    else:
+        Logger.success(f&#39;Rebooted successfully&#39;)
+        return True</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.select_device"><code class="name flex">
-<span>def <span class="ident">select_device</span></span>(<span>self, device_serial: str)</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.select_device"><code class="name flex">
+<span>def <span class="ident">select_device</span></span>(<span>self, device_serial: str) ‑> bool</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function selects a device based on its serial number.</p>
@@ -2102,24 +2376,38 @@ perform. It can have one of the following values: [bootloader | recovery | sidel
 <dt><strong><code>device_serial</code></strong> :&ensp;<code>str</code></dt>
 <dd>The <code>device_serial</code> parameter is a string that represents the serial
 number of a device.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Boolean</code></dt>
+<dd>True if the device is found and selected.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def select_device(self, device_serial: str):
+<pre><code class="python">def select_device(self, device_serial: str) -&gt; bool:
     &#34;&#34;&#34;
     The function selects a device based on its serial number.
     
     Args:
         device_serial (str): The `device_serial` parameter is a string that represents the serial
             number of a device.
+    
+    Returns:
+        Boolean: True if the device is found and selected.
     &#34;&#34;&#34;
-    self.__selected_device = device_serial</code></pre>
+    if device_serial in self.__devices:
+        self.__selected_device = device_serial
+        Logger.success(f&#39;Selected device: [bold blue]{self.__selected_device}[/bold blue]&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Device: [bold blue]{device_serial}[/bold blue] is not found&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.send_keyevent_input"><code class="name flex">
-<span>def <span class="ident">send_keyevent_input</span></span>(<span>self, keycode: <a title="AndroidTVController.key_codes.KeyCodes" href="key_codes.html#AndroidTVController.key_codes.KeyCodes">KeyCodes</a>, long_press: bool = False) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.send_keyevent_input"><code class="name flex">
+<span>def <span class="ident">send_keyevent_input</span></span>(<span>self, keycode: <a title="AndroidTVController.android_tv_rc.key_codes.KeyCodes" href="key_codes.html#AndroidTVController.android_tv_rc.key_codes.KeyCodes">KeyCodes</a>, long_press: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function executes an adb shell command to send key event input that simulates pressing button keys.</p>
@@ -2129,31 +2417,26 @@ number of a device.</dd>
 <dd>the keycode to send, table of key codes: <a href="https://www.temblast.com/ref/akeyscode.htm">https://www.temblast.com/ref/akeyscode.htm</a></dd>
 <dt><strong><code>long_press</code></strong> :&ensp;<code>bool</code></dt>
 <dd>specify if simulate a long press for the key or not. Defaults to False.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>String of the output results of sending input.</p></div>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False) -&gt; str:
+<pre><code class="python">def send_keyevent_input(self, keycode: KeyCodes, long_press: bool=False):
     &#34;&#34;&#34;
     The function executes an adb shell command to send key event input that simulates pressing button keys.
     
     Args:
         keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
         long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
-    
-    Returns:
-        String of the output results of sending input.
     &#34;&#34;&#34;
     command = f&#39;input keyevent {keycode.name}&#39;
     if long_press:
-        command += &#39;--longpress&#39;
-    return self.execute_shell_command(command)</code></pre>
+        command += &#39; --longpress&#39;
+    self.execute_shell_command(command)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.send_text_input"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.send_text_input"><code class="name flex">
 <span>def <span class="ident">send_text_input</span></span>(<span>self, text: str, encode_spaces: bool = True)</span>
 </code></dt>
 <dd>
@@ -2164,9 +2447,7 @@ number of a device.</dd>
 <dd>the text string to send.</dd>
 <dt><strong><code>encode_spaces</code></strong> :&ensp;<code>bool</code></dt>
 <dd>specify if spaces should be replaced by <code>%s</code> or not. Defaults to True.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>String of the output results of sending input.</p></div>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2178,17 +2459,13 @@ number of a device.</dd>
     Args:
         text (str): the text string to send.
         encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
-    
-    Returns:
-        String of the output results of sending input.
     &#34;&#34;&#34;
-    &#39;&#39;&#39;Send text.&#39;&#39;&#39;
     processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
-    return self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
+    self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.start_app"><code class="name flex">
-<span>def <span class="ident">start_app</span></span>(<span>self, package: str, activity: str, wait: bool = True, stop: bool = True) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.start_app"><code class="name flex">
+<span>def <span class="ident">start_app</span></span>(<span>self, package: str, activity: str, wait: bool = True, stop: bool = True) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function starts an Android app with the specified package and activity, optionally waiting
@@ -2216,12 +2493,12 @@ before starting the activity. If it is set to False, the target app will not be 
 Defaults to True</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the app launch process result.</p></div>
+<p>Boolean indicates if app starting process is successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; str:
+<pre><code class="python">def start_app(self, package: str, activity: str, wait: bool=True, stop: bool=True) -&gt; bool|None:
     &#34;&#34;&#34;
     The function starts an Android app with the specified package and activity, optionally waiting
     for the launch to complete and stopping the app before starting the activity.
@@ -2244,8 +2521,14 @@ Defaults to True</dd>
             Defaults to True
     
     Returns:
-        String of the app launch process result.
+        Boolean indicates if app starting process is successful. `None` if no device found.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
+    # check if app is installed
+    if not self.is_installed(package):
+        return False
+    self.send_keyevent_input(KeyCodes.KEYCODE_HOME)
     command = &#39;am start &#39;
     # wait for launch to complete
     if wait:
@@ -2253,62 +2536,52 @@ Defaults to True</dd>
     if stop: # force stop the target app before starting the activity
         command += &#39;-S &#39;
     command += f&#39;{package}/{activity}&#39;
-    return self.execute_shell_command(command)</code></pre>
+    Logger.info(f&#39;Starting app: [bold green]{package}[/bold green] ..&#39;)
+    result = self.execute_shell_command(command)
+    if &#39;Error&#39; in result:
+        Logger.error(f&#39;Starting app [bold blue]{package}[/bold blue] failed&#39;)
+        return False
+    else:
+        Logger.success(f&#39;App: [bold blue]{package}[/bold blue] started successfully&#39;)
+        return True</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.start_server"><code class="name flex">
-<span>def <span class="ident">start_server</span></span>(<span>self)</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.start_server"><code class="name flex">
+<span>def <span class="ident">start_server</span></span>(<span>self) ‑> bool</span>
 </code></dt>
 <dd>
-<div class="desc"><p>The function starts an ADB server and waits for it to start up.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def start_server(self):
-    &#34;&#34;&#34;
-    The function starts an ADB server and waits for it to start up.
-    &#34;&#34;&#34;
-    command = &#39;start-server&#39;
-    if self.__verbose:
-        Logger.success(&#39;ADB server is started&#39;)
-    self.__server_process = self.__execute_command(command, False)
-    time.sleep(5) # give time to start up</code></pre>
-</details>
-</dd>
-<dt id="AndroidTVController.adb_client.ADBClient.start_service"><code class="name flex">
-<span>def <span class="ident">start_service</span></span>(<span>self, service: str) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The function executes an adb shell command to start a service.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>service</code></strong> :&ensp;<code>str</code></dt>
-<dd>The <code>service</code> parameter is a string that represents service name that you
-want to start.</dd>
-</dl>
+<div class="desc"><p>The function <code>start_server</code> starts an ADB server and waits for it to start up.</p>
 <h2 id="returns">Returns</h2>
-<p>String of the output results of service starting processing.</p></div>
+<p>Boolean indicating whether the server is running or not.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def start_service(self, service: str) -&gt; str:
+<pre><code class="python">def start_server(self) -&gt; bool:
     &#34;&#34;&#34;
-    The function executes an adb shell command to start a service.
-    
-    Args:
-        service (str): The `service` parameter is a string that represents service name that you
-            want to start.
+    The function `start_server` starts an ADB server and waits for it to start up.
     
     Returns:
-        String of the output results of service starting processing.
+        Boolean indicating whether the server is running or not.
     &#34;&#34;&#34;
-    return self.execute_shell_command(f&#39;am startservice {service}&#39;)</code></pre>
+    Logger.info(&#39;Starting ADB server..&#39;)
+    
+    # start the adb server as background process
+    self.__server_process = self.__execute_command(&#39;start-server&#39;, blocking=False, include_selected_serial=False)
+    
+    # give time to start up
+    time.sleep(5)
+    
+    if self.__server_process:
+        Logger.success(&#39;ADB server is started&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Unable to start ADB server&#39;)
+        return False</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.stop_app"><code class="name flex">
-<span>def <span class="ident">stop_app</span></span>(<span>self, package: str) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.stop_app"><code class="name flex">
+<span>def <span class="ident">stop_app</span></span>(<span>self, package: str) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function stops an Android app with the specified package.</p>
@@ -2319,12 +2592,12 @@ want to start.</dd>
 you want to stop.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the app stopping process result.</p></div>
+<p>Boolean indicates if app stopping process is successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def stop_app(self, package: str) -&gt; str:
+<pre><code class="python">def stop_app(self, package: str) -&gt; bool|None:
     &#34;&#34;&#34;
     The function stops an Android app with the specified package.
     
@@ -2333,45 +2606,22 @@ you want to stop.</dd>
             you want to stop.
     
     Returns:
-        String of the app stopping process result.
+        Boolean indicates if app stopping process is successful. `None` if no device found.
     &#34;&#34;&#34;
-    return self.execute_shell_command(f&#39;am force-stop {package}&#39;)</code></pre>
+    if self.__selected_device is None:
+        return
+    Logger.info(f&#39;Stopping app: [bold green]{package}[/bold green] ..&#39;)
+    result =  self.execute_shell_command(f&#39;am force-stop {package}&#39;)
+    if &#39;Error&#39; in result:
+        Logger.error(f&#39;Stopping app [bold blue]{package}[/bold blue] failed&#39;)
+        return False
+    else:
+        Logger.success(f&#39;App: [bold blue]{package}[/bold blue] stopped successfully&#39;)
+        return True</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.adb_client.ADBClient.stop_service"><code class="name flex">
-<span>def <span class="ident">stop_service</span></span>(<span>self, service: str) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The function executes an adb shell command to stop a running service.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>service</code></strong> :&ensp;<code>str</code></dt>
-<dd>The <code>service</code> parameter is a string that represents service name that you
-want to stop.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>String of the output results of service stopping processing.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def stop_service(self, service: str) -&gt; str:
-    &#34;&#34;&#34;
-    The function executes an adb shell command to stop a running service.
-    
-    Args:
-        service (str): The `service` parameter is a string that represents service name that you
-            want to stop.
-    
-    Returns:
-        String of the output results of service stopping processing.
-    &#34;&#34;&#34;
-    return self.execute_shell_command(f&#39;am stopservice {service}&#39;)
-    # return self.execute_shell_command(f&#39;am force-stop {service}&#39;)</code></pre>
-</details>
-</dd>
-<dt id="AndroidTVController.adb_client.ADBClient.uninstall"><code class="name flex">
-<span>def <span class="ident">uninstall</span></span>(<span>self, package: str, keep_data: bool = False) ‑> str</span>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.uninstall"><code class="name flex">
+<span>def <span class="ident">uninstall</span></span>(<span>self, package: str, keep_data: bool = False) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The <code>uninstall</code> function removes an app package from a device, with an option to keep the data
@@ -2388,12 +2638,12 @@ If set to False (default), the directories will be removed along with the app pa
 to False</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>String of the app removal process result.</p></div>
+<p>Boolean indicates if uninstallation process is successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def uninstall(self, package: str, keep_data: bool=False) -&gt; str:
+<pre><code class="python">def uninstall(self, package: str, keep_data: bool=False) -&gt; bool|None:
     &#34;&#34;&#34;
     The `uninstall` function removes an app package from a device, with an option to keep the data
     and cache directories.
@@ -2407,13 +2657,25 @@ to False</dd>
             to False
     
     Returns:
-        String of the app removal process result.
+        Boolean indicates if uninstallation process is successful. `None` if no device found.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     command = &#39;uninstall &#39;
     if keep_data:
         command += &#39;-k &#39;
     command += package
-    return self.__execute_command(command)</code></pre>
+    message = f&#39;Uninstalling package [bold green]{package}[/bold green]&#39;
+    message += &#39;while keeping the data&#39; if keep_data else &#39;&#39;
+    message += &#39;, it will took up to 2 minutes to complete..&#39;
+    Logger.info(message)
+    result = self.__execute_command(command)
+    if &#39;Success&#39; in result:
+        Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
+        return True
+    else:
+        Logger.error(f&#39;Uninstallation process failed&#39;)
+        return False</code></pre>
 </details>
 </dd>
 </dl>
@@ -2429,43 +2691,41 @@ to False</dd>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="AndroidTVController" href="index.html">AndroidTVController</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc" href="index.html">AndroidTVController.android_tv_rc</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="AndroidTVController.adb_client.ADBClient" href="#AndroidTVController.adb_client.ADBClient">ADBClient</a></code></h4>
+<h4><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient">ADBClient</a></code></h4>
 <ul class="">
-<li><code><a title="AndroidTVController.adb_client.ADBClient.clean" href="#AndroidTVController.adb_client.ADBClient.clean">clean</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.connect" href="#AndroidTVController.adb_client.ADBClient.connect">connect</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.disconnect" href="#AndroidTVController.adb_client.ADBClient.disconnect">disconnect</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.execute_shell_command" href="#AndroidTVController.adb_client.ADBClient.execute_shell_command">execute_shell_command</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_device_info" href="#AndroidTVController.adb_client.ADBClient.get_device_info">get_device_info</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_devices" href="#AndroidTVController.adb_client.ADBClient.get_devices">get_devices</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_devpath" href="#AndroidTVController.adb_client.ADBClient.get_devpath">get_devpath</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_ip_address" href="#AndroidTVController.adb_client.ADBClient.get_ip_address">get_ip_address</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_package_activities" href="#AndroidTVController.adb_client.ADBClient.get_package_activities">get_package_activities</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_serialno" href="#AndroidTVController.adb_client.ADBClient.get_serialno">get_serialno</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.get_state" href="#AndroidTVController.adb_client.ADBClient.get_state">get_state</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.install" href="#AndroidTVController.adb_client.ADBClient.install">install</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.is_connected" href="#AndroidTVController.adb_client.ADBClient.is_connected">is_connected</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.is_installed" href="#AndroidTVController.adb_client.ADBClient.is_installed">is_installed</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.kill_server" href="#AndroidTVController.adb_client.ADBClient.kill_server">kill_server</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.list_packages" href="#AndroidTVController.adb_client.ADBClient.list_packages">list_packages</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.list_services" href="#AndroidTVController.adb_client.ADBClient.list_services">list_services</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.pull" href="#AndroidTVController.adb_client.ADBClient.pull">pull</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.push" href="#AndroidTVController.adb_client.ADBClient.push">push</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.reboot" href="#AndroidTVController.adb_client.ADBClient.reboot">reboot</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.select_device" href="#AndroidTVController.adb_client.ADBClient.select_device">select_device</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.send_keyevent_input" href="#AndroidTVController.adb_client.ADBClient.send_keyevent_input">send_keyevent_input</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.send_text_input" href="#AndroidTVController.adb_client.ADBClient.send_text_input">send_text_input</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.start_app" href="#AndroidTVController.adb_client.ADBClient.start_app">start_app</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.start_server" href="#AndroidTVController.adb_client.ADBClient.start_server">start_server</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.start_service" href="#AndroidTVController.adb_client.ADBClient.start_service">start_service</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.stop_app" href="#AndroidTVController.adb_client.ADBClient.stop_app">stop_app</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.stop_service" href="#AndroidTVController.adb_client.ADBClient.stop_service">stop_service</a></code></li>
-<li><code><a title="AndroidTVController.adb_client.ADBClient.uninstall" href="#AndroidTVController.adb_client.ADBClient.uninstall">uninstall</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.clean" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.clean">clean</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.connect" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.connect">connect</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.disconnect" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.disconnect">disconnect</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.execute_shell_command" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.execute_shell_command">execute_shell_command</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_device_info" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_device_info">get_device_info</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devices" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devices">get_devices</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devpath" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_devpath">get_devpath</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_ip_address" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_ip_address">get_ip_address</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_package_activities" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_package_activities">get_package_activities</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_selected_device" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_selected_device">get_selected_device</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_serialno" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_serialno">get_serialno</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.get_state" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.get_state">get_state</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.install" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.install">install</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_connected" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.is_connected">is_connected</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_installed" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.is_installed">is_installed</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server">kill_server</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.list_packages" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.list_packages">list_packages</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.pull" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.pull">pull</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.push" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.push">push</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.reboot" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.reboot">reboot</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.select_device" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.select_device">select_device</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.send_keyevent_input" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.send_keyevent_input">send_keyevent_input</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.send_text_input" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.send_text_input">send_text_input</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.start_app" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.start_app">start_app</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.start_server" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.start_server">start_server</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.stop_app" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.stop_app">stop_app</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.uninstall" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.uninstall">uninstall</a></code></li>
 </ul>
 </li>
 </ul>

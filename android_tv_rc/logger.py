@@ -25,7 +25,7 @@ class Logger:
 
 
     @classmethod
-    def error(cls, message, exit_script=True):
+    def error(cls, message, exit_script=False):
         emoji_list = ['face_with_rolling_eyes', 'sob', 'face_with_steam_from_nose', 'face_without_mouth', 'face_screaming_in_fear', 'face_with_head__bandage', 'tired_face']
         err_emoji = random.choice(emoji_list)
         err_message = f'\n[red bold]:{err_emoji}: Error: {message}![/red bold]\n'

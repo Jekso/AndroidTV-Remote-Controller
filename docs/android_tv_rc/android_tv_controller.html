@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>AndroidTVController.android_tv_controller API documentation</title>
+<title>AndroidTVController.android_tv_rc.android_tv_controller API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,32 +19,47 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>AndroidTVController.android_tv_controller</code></h1>
+<h1 class="title">Module <code>AndroidTVController.android_tv_rc.android_tv_controller</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .key_codes import KeyCodes
-from .adb_client import ADBClient
+<pre><code class="python">from .adb_client import ADBClient
 from .tv_apps import AndroidTVApps
-
+from .key_codes import KeyCodes
 
 
 class AndroidTVController:
 
 
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, verbose: bool=False, show_command: bool=False):
         &#34;&#34;&#34;
         The class has many important utils to interact with android TV using adb.
         
         Args:
             ip (str): the ip address of the Android TV device
+            verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
+                enable verbose logging. If set to `True`, it will display additional information during the
+                execution of the code. If set to `False` (default), it will not display any additional
+                information. Defaults to False.
+            show_command (bool): The `show_command` parameter is a boolean flag that determines whether or
+                not to display the executed ADB commands. If `show_command` is set to `True`, the executed ADB
+                commands will be shown. If `show_command` is set to `False`, the executed ADB commands will.
+                Defaults to False.
         &#34;&#34;&#34;
-        self.__adb_client = ADBClient()
+        self.__adb_client = ADBClient(verbose, show_command)
         self.__adb_client.connect(ip)
+    
+    
+    
+    def get_adb_client(self):
+        &#34;&#34;&#34;
+        Return the adb session client.
+        &#34;&#34;&#34;
+        return self.__adb_client
         
 
 
@@ -191,7 +206,7 @@ class AndroidTVController:
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
         for digit in channel_number:
             self.__adb_client.send_keyevent_input(numbers_key_codes[digit])
-    
+        
     
     
     # ------------------------------[ Apps Commands ]------------------------------
@@ -200,7 +215,7 @@ class AndroidTVController:
     
     def open_app(self, package: str, activity: str):
         &#34;&#34;&#34;
-        The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+        The function starts app with the specified package and activity.
         
         To get the package name for an app search for it on google, or
         if the app is installed use `adb_client.list_packages()` method.
@@ -216,15 +231,7 @@ class AndroidTVController:
                 interface, and it is the basic building block of an Android app. Each activity has a unique name
                 that is specified in the AndroidManifest.xml file
         &#34;&#34;&#34;
-        if self.__adb_client.is_installed(package):
-            self.__adb_client.start_app(package, activity)
-    
-    
-    
-    def open_chrome(self):
-        &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
-        app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.__adb_client.start_app(package, activity)
 
     
     
@@ -252,6 +259,13 @@ class AndroidTVController:
     def open_watch_it(self):
         &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
         app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+        
+    
+    
+    def open_shahid(self):
+        &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
+        app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
         self.open_app(app[0], app[1])</code></pre>
 </details>
 </section>
@@ -264,9 +278,9 @@ class AndroidTVController:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController"><code class="flex name class">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController"><code class="flex name class">
 <span>class <span class="ident">AndroidTVController</span></span>
-<span>(</span><span>ip: str)</span>
+<span>(</span><span>ip: str, verbose: bool = False, show_command: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The class has many important utils to interact with android TV using adb.</p>
@@ -274,6 +288,16 @@ class AndroidTVController:
 <dl>
 <dt><strong><code>ip</code></strong> :&ensp;<code>str</code></dt>
 <dd>the ip address of the Android TV device</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The <code>verbose</code> parameter is a boolean flag that determines whether or not to
+enable verbose logging. If set to <code>True</code>, it will display additional information during the
+execution of the code. If set to <code>False</code> (default), it will not display any additional
+information. Defaults to False.</dd>
+<dt><strong><code>show_command</code></strong> :&ensp;<code>bool</code></dt>
+<dd>The <code>show_command</code> parameter is a boolean flag that determines whether or
+not to display the executed ADB commands. If <code>show_command</code> is set to <code>True</code>, the executed ADB
+commands will be shown. If <code>show_command</code> is set to <code>False</code>, the executed ADB commands will.
+Defaults to False.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -283,15 +307,31 @@ class AndroidTVController:
 
 
 
-    def __init__(self, ip: str):
+    def __init__(self, ip: str, verbose: bool=False, show_command: bool=False):
         &#34;&#34;&#34;
         The class has many important utils to interact with android TV using adb.
         
         Args:
             ip (str): the ip address of the Android TV device
+            verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
+                enable verbose logging. If set to `True`, it will display additional information during the
+                execution of the code. If set to `False` (default), it will not display any additional
+                information. Defaults to False.
+            show_command (bool): The `show_command` parameter is a boolean flag that determines whether or
+                not to display the executed ADB commands. If `show_command` is set to `True`, the executed ADB
+                commands will be shown. If `show_command` is set to `False`, the executed ADB commands will.
+                Defaults to False.
         &#34;&#34;&#34;
-        self.__adb_client = ADBClient()
+        self.__adb_client = ADBClient(verbose, show_command)
         self.__adb_client.connect(ip)
+    
+    
+    
+    def get_adb_client(self):
+        &#34;&#34;&#34;
+        Return the adb session client.
+        &#34;&#34;&#34;
+        return self.__adb_client
         
 
 
@@ -438,7 +478,7 @@ class AndroidTVController:
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
         for digit in channel_number:
             self.__adb_client.send_keyevent_input(numbers_key_codes[digit])
-    
+        
     
     
     # ------------------------------[ Apps Commands ]------------------------------
@@ -447,7 +487,7 @@ class AndroidTVController:
     
     def open_app(self, package: str, activity: str):
         &#34;&#34;&#34;
-        The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+        The function starts app with the specified package and activity.
         
         To get the package name for an app search for it on google, or
         if the app is installed use `adb_client.list_packages()` method.
@@ -463,15 +503,7 @@ class AndroidTVController:
                 interface, and it is the basic building block of an Android app. Each activity has a unique name
                 that is specified in the AndroidManifest.xml file
         &#34;&#34;&#34;
-        if self.__adb_client.is_installed(package):
-            self.__adb_client.start_app(package, activity)
-    
-    
-    
-    def open_chrome(self):
-        &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
-        app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.__adb_client.start_app(package, activity)
 
     
     
@@ -499,11 +531,34 @@ class AndroidTVController:
     def open_watch_it(self):
         &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
         app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
+        self.open_app(app[0], app[1])
+        
+    
+    
+    def open_shahid(self):
+        &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
+        app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
         self.open_app(app[0], app[1])</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client"><code class="name flex">
+<span>def <span class="ident">get_adb_client</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the adb session client.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_adb_client(self):
+    &#34;&#34;&#34;
+    Return the adb session client.
+    &#34;&#34;&#34;
+    return self.__adb_client</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">
 <span>def <span class="ident">open_amazon_prime</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -518,11 +573,11 @@ class AndroidTVController:
     self.open_app(app[0], app[1])</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_app"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app"><code class="name flex">
 <span>def <span class="ident">open_app</span></span>(<span>self, package: str, activity: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>The function checks if the TV Android app is installed and then starts this app with the specified package and activity.</p>
+<div class="desc"><p>The function starts app with the specified package and activity.</p>
 <p>To get the package name for an app search for it on google, or
 if the app is installed use <code>adb_client.list_packages()</code> method.
 To get main activity name use <code>adb_client.get_package_activities(package_name)</code>
@@ -545,7 +600,7 @@ that is specified in the AndroidManifest.xml file</dd>
 </summary>
 <pre><code class="python">def open_app(self, package: str, activity: str):
     &#34;&#34;&#34;
-    The function checks if the TV Android app is installed and then starts this app with the specified package and activity.
+    The function starts app with the specified package and activity.
     
     To get the package name for an app search for it on google, or
     if the app is installed use `adb_client.list_packages()` method.
@@ -561,26 +616,10 @@ that is specified in the AndroidManifest.xml file</dd>
             interface, and it is the basic building block of an Android app. Each activity has a unique name
             that is specified in the AndroidManifest.xml file
     &#34;&#34;&#34;
-    if self.__adb_client.is_installed(package):
-        self.__adb_client.start_app(package, activity)</code></pre>
+    self.__adb_client.start_app(package, activity)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_chrome"><code class="name flex">
-<span>def <span class="ident">open_chrome</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Opens Google Chrome application</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def open_chrome(self):
-    &#34;&#34;&#34;Opens Google Chrome application&#34;&#34;&#34;
-    app = AndroidTVApps.CHROME.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
-</details>
-</dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_netflix"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix"><code class="name flex">
 <span>def <span class="ident">open_netflix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -595,7 +634,22 @@ that is specified in the AndroidManifest.xml file</dd>
     self.open_app(app[0], app[1])</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_shahid"><code class="name flex">
+<span>def <span class="ident">open_shahid</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Opens Shahid application</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def open_shahid(self):
+    &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
+    app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
+    self.open_app(app[0], app[1])</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_watch_it"><code class="name flex">
 <span>def <span class="ident">open_watch_it</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -610,7 +664,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.open_app(app[0], app[1])</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.open_youtube"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_youtube"><code class="name flex">
 <span>def <span class="ident">open_youtube</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -625,7 +679,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.open_app(app[0], app[1])</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_back"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_back"><code class="name flex">
 <span>def <span class="ident">press_back</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -639,7 +693,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_down"><code class="name flex">
 <span>def <span class="ident">press_channel_down</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -654,7 +708,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_DOWN)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_number"><code class="name flex">
 <span>def <span class="ident">press_channel_number</span></span>(<span>self, channel_number: str)</span>
 </code></dt>
 <dd>
@@ -682,7 +736,7 @@ that is specified in the AndroidManifest.xml file</dd>
         self.__adb_client.send_keyevent_input(numbers_key_codes[digit])</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_up"><code class="name flex">
 <span>def <span class="ident">press_channel_up</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -697,7 +751,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_CHANNEL_UP)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_down"><code class="name flex">
 <span>def <span class="ident">press_dpad_down</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -711,7 +765,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_DOWN)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_left"><code class="name flex">
 <span>def <span class="ident">press_dpad_left</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -725,7 +779,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_LEFT)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_right"><code class="name flex">
 <span>def <span class="ident">press_dpad_right</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -739,7 +793,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_RIGHT)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_up"><code class="name flex">
 <span>def <span class="ident">press_dpad_up</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -753,7 +807,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_DPAD_UP)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_enter"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_enter"><code class="name flex">
 <span>def <span class="ident">press_enter</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -767,7 +821,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_ENTER)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_home"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_home"><code class="name flex">
 <span>def <span class="ident">press_home</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -781,7 +835,7 @@ that is specified in the AndroidManifest.xml file</dd>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_power"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_power"><code class="name flex">
 <span>def <span class="ident">press_power</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -799,7 +853,7 @@ you can use it to power on/off the TV device.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_POWER)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_sleep"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_sleep"><code class="name flex">
 <span>def <span class="ident">press_sleep</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -817,7 +871,7 @@ signals from the remote control, and it will wake up quickly when you press a bu
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SLEEP)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_soft_sleep"><code class="name flex">
 <span>def <span class="ident">press_soft_sleep</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -837,7 +891,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SOFT_SLEEP)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down"><code class="name flex">
 <span>def <span class="ident">press_volume_down</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -851,7 +905,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_DOWN)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_mute"><code class="name flex">
 <span>def <span class="ident">press_volume_mute</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -865,7 +919,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_MUTE)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_up"><code class="name flex">
 <span>def <span class="ident">press_volume_up</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -879,7 +933,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_VOLUME_UP)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_wakeup"><code class="name flex">
 <span>def <span class="ident">press_wakeup</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -908,37 +962,38 @@ and it will take a few seconds to wake up when you press a button.</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="AndroidTVController" href="index.html">AndroidTVController</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc" href="index.html">AndroidTVController.android_tv_rc</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="AndroidTVController.android_tv_controller.AndroidTVController" href="#AndroidTVController.android_tv_controller.AndroidTVController">AndroidTVController</a></code></h4>
+<h4><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController">AndroidTVController</a></code></h4>
 <ul class="">
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_amazon_prime">open_amazon_prime</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_app" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_app">open_app</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_chrome" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_chrome">open_chrome</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_netflix" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_netflix">open_netflix</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_watch_it">open_watch_it</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.open_youtube" href="#AndroidTVController.android_tv_controller.AndroidTVController.open_youtube">open_youtube</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_back" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_back">press_back</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_down">press_channel_down</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_number">press_channel_number</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_channel_up">press_channel_up</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_down">press_dpad_down</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_left">press_dpad_left</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_right">press_dpad_right</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_dpad_up">press_dpad_up</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_enter" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_enter">press_enter</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_home" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_home">press_home</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_power" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_power">press_power</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_sleep" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_sleep">press_sleep</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_soft_sleep">press_soft_sleep</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_down">press_volume_down</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_mute">press_volume_mute</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_volume_up">press_volume_up</a></code></li>
-<li><code><a title="AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup" href="#AndroidTVController.android_tv_controller.AndroidTVController.press_wakeup">press_wakeup</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client">get_adb_client</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime">open_amazon_prime</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app">open_app</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix">open_netflix</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_shahid" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_shahid">open_shahid</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_watch_it" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_watch_it">open_watch_it</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_youtube" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_youtube">open_youtube</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_back" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_back">press_back</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_down" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_down">press_channel_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_number" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_number">press_channel_number</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_up" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_channel_up">press_channel_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_down" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_down">press_dpad_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_left" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_left">press_dpad_left</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_right" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_right">press_dpad_right</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_up" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_dpad_up">press_dpad_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_enter" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_enter">press_enter</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_home" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_home">press_home</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_power" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_power">press_power</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_sleep" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_sleep">press_sleep</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_soft_sleep" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_soft_sleep">press_soft_sleep</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down">press_volume_down</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_mute" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_mute">press_volume_mute</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_up" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_up">press_volume_up</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_wakeup" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_wakeup">press_wakeup</a></code></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>AndroidTVController.logger API documentation</title>
+<title>AndroidTVController.android_tv_rc.logger API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>AndroidTVController.logger</code></h1>
+<h1 class="title">Module <code>AndroidTVController.android_tv_rc.logger</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -53,7 +53,7 @@ class Logger:
 
 
     @classmethod
-    def error(cls, message, exit_script=True):
+    def error(cls, message, exit_script=False):
         emoji_list = [&#39;face_with_rolling_eyes&#39;, &#39;sob&#39;, &#39;face_with_steam_from_nose&#39;, &#39;face_without_mouth&#39;, &#39;face_screaming_in_fear&#39;, &#39;face_with_head__bandage&#39;, &#39;tired_face&#39;]
         err_emoji = random.choice(emoji_list)
         err_message = f&#39;\n[red bold]:{err_emoji}: Error: {message}![/red bold]\n&#39;
@@ -96,7 +96,7 @@ class Logger:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="AndroidTVController.logger.Logger"><code class="flex name class">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger"><code class="flex name class">
 <span>class <span class="ident">Logger</span></span>
 </code></dt>
 <dd>
@@ -126,7 +126,7 @@ class Logger:
 
 
     @classmethod
-    def error(cls, message, exit_script=True):
+    def error(cls, message, exit_script=False):
         emoji_list = [&#39;face_with_rolling_eyes&#39;, &#39;sob&#39;, &#39;face_with_steam_from_nose&#39;, &#39;face_without_mouth&#39;, &#39;face_screaming_in_fear&#39;, &#39;face_with_head__bandage&#39;, &#39;tired_face&#39;]
         err_emoji = random.choice(emoji_list)
         err_message = f&#39;\n[red bold]:{err_emoji}: Error: {message}![/red bold]\n&#39;
@@ -161,15 +161,15 @@ class Logger:
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="AndroidTVController.logger.Logger.console"><code class="name">var <span class="ident">console</span></code></dt>
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.console"><code class="name">var <span class="ident">console</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 <h3>Static methods</h3>
 <dl>
-<dt id="AndroidTVController.logger.Logger.error"><code class="name flex">
-<span>def <span class="ident">error</span></span>(<span>message, exit_script=True)</span>
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.error"><code class="name flex">
+<span>def <span class="ident">error</span></span>(<span>message, exit_script=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -178,7 +178,7 @@ class Logger:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def error(cls, message, exit_script=True):
+def error(cls, message, exit_script=False):
     emoji_list = [&#39;face_with_rolling_eyes&#39;, &#39;sob&#39;, &#39;face_with_steam_from_nose&#39;, &#39;face_without_mouth&#39;, &#39;face_screaming_in_fear&#39;, &#39;face_with_head__bandage&#39;, &#39;tired_face&#39;]
     err_emoji = random.choice(emoji_list)
     err_message = f&#39;\n[red bold]:{err_emoji}: Error: {message}![/red bold]\n&#39;
@@ -188,7 +188,7 @@ def error(cls, message, exit_script=True):
         exit()</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.logger.Logger.info"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.info"><code class="name flex">
 <span>def <span class="ident">info</span></span>(<span>message)</span>
 </code></dt>
 <dd>
@@ -202,7 +202,7 @@ def info(cls, message):
     cls.console.print(f&#39;[bold yellow1]:bulb: {message}.[/bold yellow1]\n&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.logger.Logger.print"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.print"><code class="name flex">
 <span>def <span class="ident">print</span></span>(<span>message)</span>
 </code></dt>
 <dd>
@@ -216,7 +216,7 @@ def print(cls, message):
     cls.console.print(f&#39;{message}&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.logger.Logger.success"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.success"><code class="name flex">
 <span>def <span class="ident">success</span></span>(<span>message)</span>
 </code></dt>
 <dd>
@@ -230,7 +230,7 @@ def success(cls, message):
     cls.console.print(f&#39;[bold green]:sunglasses: {message}.[/bold green]\n&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.logger.Logger.warning"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.warning"><code class="name flex">
 <span>def <span class="ident">warning</span></span>(<span>message)</span>
 </code></dt>
 <dd>
@@ -244,7 +244,7 @@ def warning(cls, message):
     cls.console.print(f&#39;[bold orange1]:prohibited: {message}.[/bold orange1]\n&#39;)</code></pre>
 </details>
 </dd>
-<dt id="AndroidTVController.logger.Logger.welcome"><code class="name flex">
+<dt id="AndroidTVController.android_tv_rc.logger.Logger.welcome"><code class="name flex">
 <span>def <span class="ident">welcome</span></span>(<span>class_desc='')</span>
 </code></dt>
 <dd>
@@ -277,21 +277,21 @@ def welcome(cls, class_desc=&#39;&#39;):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="AndroidTVController" href="index.html">AndroidTVController</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc" href="index.html">AndroidTVController.android_tv_rc</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="AndroidTVController.logger.Logger" href="#AndroidTVController.logger.Logger">Logger</a></code></h4>
+<h4><code><a title="AndroidTVController.android_tv_rc.logger.Logger" href="#AndroidTVController.android_tv_rc.logger.Logger">Logger</a></code></h4>
 <ul class="two-column">
-<li><code><a title="AndroidTVController.logger.Logger.console" href="#AndroidTVController.logger.Logger.console">console</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.error" href="#AndroidTVController.logger.Logger.error">error</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.info" href="#AndroidTVController.logger.Logger.info">info</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.print" href="#AndroidTVController.logger.Logger.print">print</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.success" href="#AndroidTVController.logger.Logger.success">success</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.warning" href="#AndroidTVController.logger.Logger.warning">warning</a></code></li>
-<li><code><a title="AndroidTVController.logger.Logger.welcome" href="#AndroidTVController.logger.Logger.welcome">welcome</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.console" href="#AndroidTVController.android_tv_rc.logger.Logger.console">console</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.error" href="#AndroidTVController.android_tv_rc.logger.Logger.error">error</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.info" href="#AndroidTVController.android_tv_rc.logger.Logger.info">info</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.print" href="#AndroidTVController.android_tv_rc.logger.Logger.print">print</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.success" href="#AndroidTVController.android_tv_rc.logger.Logger.success">success</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.warning" href="#AndroidTVController.android_tv_rc.logger.Logger.warning">warning</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.logger.Logger.welcome" href="#AndroidTVController.android_tv_rc.logger.Logger.welcome">welcome</a></code></li>
 </ul>
 </li>
 </ul>

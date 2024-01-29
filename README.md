@@ -1,4 +1,4 @@
- # AndroidTV-Remote-Controller
+# AndroidTV-Remote-Controller
 
 **Effortlessly control your Android TV using Python and ADB!**
 
@@ -8,55 +8,62 @@ This means you can use it to control your Android TV or even any android devices
 ## Features
 
 - **Comprehensive command set:**
-    - Works with any Android TV device.
-    - Easy and clean API to use a lot of adb commands without going deep into details and different options.
-    - Connect many Android devices like Phones, TVs, Wearables, etc using USB and Wireless TCP connections.
-    - List rich devices information.
-    - Upload and download files (eg. APK files, Images, Videos, etc).
-    - Install/Uninstall android apps.
-    - List all packages and easily filter them as system, third-party, enabled, disabled apps.
-    - Get package activities to easily use it for auto starting and stopping apps.
-    - Interact with device shell and invoke any shell commands.
-    - List, start and stop services.
-    - Power On/Off, Sleep, Soft sleep & Wake up the TV.
-    - Easily navigate home screen and menus using D-Pad navigation
-    - Control volume (up, down, mute)
-    - Control TV channel buttons (up, down) or using channel number
-    - Send text input for any input fields (e.g., Search).
-    - Open famous apps (e.g., YouTube, Netflix, Amazon Prime, Watch IT)
-    - Start any other application by using its package name.
-    - Simulate all android key codes not just for TV but for any android device: <a href="https://www.temblast.com/ref/akeyscode.htm" target="_blank">Check Supported Key Codes List</a>
+  - Works with any Android TV device.
+  - Easy and clean API to use a lot of adb commands without going deep into details and different options.
+  - Connect multiple Android TVs using Wireless TCP connections.
+  - List rich devices information.
+  - Upload and download files (eg. APK files, Images, Videos, etc).
+  - Install/Uninstall android apps.
+  - List all packages and easily filter them as system, third-party, enabled, disabled apps.
+  - Get package activities to easily use it for auto starting apps.
+  - Interact with device shell and invoke any shell commands.
+  - Power On/Off, Sleep, Soft sleep & Wake up the TV.
+  - Easily navigate home screen and menus using D-Pad navigation
+  - Control volume (up, down, mute)
+  - Control TV channel buttons (up, down) or using channel number
+  - Send text input for any input fields (e.g., Search).
+  - Open famous apps (e.g., YouTube, Netflix, Amazon Prime, Watch IT)
+  - Start any other application by using its package name.
+  - Simulate all android key codes not just for TV but for any android device: [Check Supported Key Codes List](https://www.temblast.com/ref/akeyscode.htm)
 - **Clear and concise API:**
-    - Intuitive methods for common actions
-    - Well-organized code structure
-    - Open for extensions
+  - Intuitive methods for common actions
+  - Well-organized code structure
+  - Open for extensions
 - **ADB integration:**
-    - Handles ADB communication smoothly
-    - No need for manual ADB setup
+  - Handles ADB communication smoothly
+  - No need for manual ADB interaction
 - **Cross-platform compatibility:**
-    - Works seamlessly on Windows, macOS, and Linux
-    - Tested on Samsung Android TV.
+  - Works seamlessly on Windows, macOS, and Linux
+  - Tested on Toshiba Android TV.
+
+## Requirements
+
+- Python 3.11
+- Android Platform Tools installed and available in your PATH environment variable. you can do this from [Here](https://developer.android.com/tools/releases/platform-tools), then you can check by open a terminal and write `adb --version` if this gives an error make sure you follow the instructions and the platform-tools folder is in your PATH environment variable.
+- Make sure your Computer and the Android TV is on the same WiFi network.
+- Get TV IP address and pair your Android TV with adb server. [Instructions](https://www.makeuseof.com/how-to-use-adb-on-android-tv/)
+- You are ready to go.
 
 ## Installation
 
+1. Download the repository by click download from github or by cloning it using this command `git clone https://github.com/Jekso/AndroidTV-Remote-Controller.git`, I will upload it to PyPi soon to easily download it using pip but for now use it locally as mentioned.
+2. Start hacking your TV xD
 
-1. Before running you need to Android Platform Tools installed and available in your PATH environment variable. you can do this from <a href="https://developer.android.com/tools/releases/platform-tools" target="_blank">here</a>, then you can check by open a terminal and write `adb --version` if this gives an error make sure you follow the instructions and the platform-tools folder is in your PATH environment variable.
-            
-
-2. Make sure your Computer and the Android TV is on the same WiFi network.
-3. Pair your Android TV device.<a href="https://developer.android.com/tools/adb" target="_blank"> Instructions</a>
-4. Download the repository by click download from github or by cloning it using this command `git clone https://github.com/Jekso/AndroidTV-Remote-Controller.git`, I will upload it to PyPi soon to easily download it using pip but for now use it locally as mentioned.
-5. You are ready to go, start hacking your TV xD
 ## Usage
 
-
 you can use `AndroidTVController` class to invoke TV commands.
+
 ```python
-from android_tv_controller import AndroidTVController
+from android_tv_rc import AndroidTVController
+
 
 # Replace with your device's IP
 # To get your Android TV ip address follow this link: https://www.androidtvtricks.com/ip-address-on-android-tv-box/
-controller = AndroidTVController("192.168.1.100")  
+# When running this code for first time and your TV is not paired, check your TV and click Allow
+# Then run the code again
+ip = '192.168.1.28'
+controller = AndroidTVController(ip)
+
 
 # --------------[ Navigation Commands ]--------------
 controller.press_home()
@@ -87,22 +94,25 @@ controller.press_channel_down()
 controller.press_channel_number('213')
 
 
-# --------------[ Apps Commands ]--------------
-controller.open_chrome()
+# --------------[ Apps Commands ]--------------)
 controller.open_youtube()
 controller.open_netflix()
 controller.open_amazon_prime()
 controller.open_watch_it()
-controller.open_app('com.android.chrome', 'com.google.android.apps.chrome.Main')
+controller.open_shahid()
+controller.open_app('net.mbc.shahidTV', '.MainActivity')
+
 ```
 
 Also you can use ADB commands API from `ADBClient` class.
+
 ```python
-from adb_client import ADBClient
-from key_codes import KeyCodes
+from android_tv_rc import ADBClient, KeyCodes
 
 
-client = ADBClient()  
+adb_client = controller.get_adb_client()
+# or you can use it as standalone without using TV Controller
+adb_client = ADBClient()  
 
 
 # --------------[ Connectivity Commands ]--------------
@@ -114,6 +124,7 @@ adb_client.disconnect()
 # --------------[ Info Commands ]--------------
 adb_client.get_devices()
 adb_client.select_device('192.168.1.103:5555')
+adb_client.get_selected_device()
 adb_client.get_device_info()
 adb_client.get_state()
 adb_client.get_serialno()
@@ -132,7 +143,7 @@ adb_client.get_package_activities('com.spotify.lite')
 adb_client.is_installed('com.spotify.lite')
 adb_client.install('test.apk')
 adb_client.uninstall('com.spotify.lite')
-adb_client.start_app('com.android.chrome', 'com.google.android.apps.chrome.Main')
+adb_client.start_app('net.mbc.shahidTV', '.MainActivity')
 adb_client.stop_app('com.android.chrome')
 
 
@@ -141,328 +152,328 @@ adb_client.reboot()
 adb_client.execute_shell_command('rm -f /sdcard/test.apk')
 
 
-# --------------[ Services Commands ]--------------
-adb_client.list_services()
-adb_client.start_service('com.android.Settings/com.android.Settings.ServiceName')
-adb_client.stop_service('com.android.Settings/com.android.Settings.ServiceName')
-
-
 # --------------[ Inputs Commands ]--------------
 adb_client.send_keyevent_input(KeyCodes.KEYCODE_HOME)
 adb_client.send_text_input('Welcome to Metaverse')
+
 ```
 
 For all key codes you can use any of these enum values
-```text
-KeyCodes.KEYCODE_UNKNOWN
-KeyCodes.KEYCODE_SOFT_LEFT
-KeyCodes.KEYCODE_SOFT_RIGHT
-KeyCodes.KEYCODE_HOME
-KeyCodes.KEYCODE_BACK
-KeyCodes.KEYCODE_CALL
-KeyCodes.KEYCODE_ENDCALL
-KeyCodes.KEYCODE_0
-KeyCodes.KEYCODE_1
-KeyCodes.KEYCODE_2
-KeyCodes.KEYCODE_3
-KeyCodes.KEYCODE_4
-KeyCodes.KEYCODE_5
-KeyCodes.KEYCODE_6
-KeyCodes.KEYCODE_7
-KeyCodes.KEYCODE_8
-KeyCodes.KEYCODE_9
-KeyCodes.KEYCODE_STAR
-KeyCodes.KEYCODE_POUND
-KeyCodes.KEYCODE_DPAD_UP
-KeyCodes.KEYCODE_DPAD_DOWN
-KeyCodes.KEYCODE_DPAD_LEFT
-KeyCodes.KEYCODE_DPAD_RIGHT
-KeyCodes.KEYCODE_DPAD_CENTER
-KeyCodes.KEYCODE_VOLUME_UP
-KeyCodes.KEYCODE_VOLUME_DOWN
-KeyCodes.KEYCODE_POWER
-KeyCodes.KEYCODE_CAMERA
-KeyCodes.KEYCODE_CLEAR
-KeyCodes.KEYCODE_A
-KeyCodes.KEYCODE_B
-KeyCodes.KEYCODE_C
-KeyCodes.KEYCODE_D
-KeyCodes.KEYCODE_E
-KeyCodes.KEYCODE_F
-KeyCodes.KEYCODE_G
-KeyCodes.KEYCODE_H
-KeyCodes.KEYCODE_I
-KeyCodes.KEYCODE_J
-KeyCodes.KEYCODE_K
-KeyCodes.KEYCODE_L
-KeyCodes.KEYCODE_M
-KeyCodes.KEYCODE_N
-KeyCodes.KEYCODE_O
-KeyCodes.KEYCODE_P
-KeyCodes.KEYCODE_Q
-KeyCodes.KEYCODE_R
-KeyCodes.KEYCODE_S
-KeyCodes.KEYCODE_T
-KeyCodes.KEYCODE_U
-KeyCodes.KEYCODE_V
-KeyCodes.KEYCODE_W
-KeyCodes.KEYCODE_X
-KeyCodes.KEYCODE_Y
-KeyCodes.KEYCODE_Z
-KeyCodes.KEYCODE_COMMA
-KeyCodes.KEYCODE_PERIOD
-KeyCodes.KEYCODE_ALT_LEFT
-KeyCodes.KEYCODE_ALT_RIGHT
-KeyCodes.KEYCODE_SHIFT_LEFT
-KeyCodes.KEYCODE_SHIFT_RIGHT
-KeyCodes.KEYCODE_TAB
-KeyCodes.KEYCODE_SPACE
-KeyCodes.KEYCODE_SYM
-KeyCodes.KEYCODE_EXPLORER
-KeyCodes.KEYCODE_ENVELOPE
-KeyCodes.KEYCODE_ENTER
-KeyCodes.KEYCODE_DEL
-KeyCodes.KEYCODE_GRAVE
-KeyCodes.KEYCODE_MINUS
-KeyCodes.KEYCODE_EQUALS
-KeyCodes.KEYCODE_LEFT_BRACKET
-KeyCodes.KEYCODE_RIGHT_BRACKET
-KeyCodes.KEYCODE_BACKSLASH
-KeyCodes.KEYCODE_SEMICOLON
-KeyCodes.KEYCODE_APOSTROPHE
-KeyCodes.KEYCODE_SLASH
-KeyCodes.KEYCODE_AT
-KeyCodes.KEYCODE_NUM
-KeyCodes.KEYCODE_HEADSETHOOK
-KeyCodes.KEYCODE_FOCUS
-KeyCodes.KEYCODE_PLUS
-KeyCodes.KEYCODE_MENU
-KeyCodes.KEYCODE_NOTIFICATION
-KeyCodes.KEYCODE_SEARCH
-KeyCodes.KEYCODE_MEDIA_PLAY_PAUSE
-KeyCodes.KEYCODE_MEDIA_STOP
-KeyCodes.KEYCODE_MEDIA_NEXT
-KeyCodes.KEYCODE_MEDIA_PREVIOUS
-KeyCodes.KEYCODE_MEDIA_REWIND
-KeyCodes.KEYCODE_MEDIA_FAST_FORWARD
-KeyCodes.KEYCODE_MUTE
-KeyCodes.KEYCODE_PAGE_UP
-KeyCodes.KEYCODE_PAGE_DOWN
-KeyCodes.KEYCODE_PICTSYMBOLS
-KeyCodes.KEYCODE_SWITCH_CHARSET
-KeyCodes.KEYCODE_BUTTON_A
-KeyCodes.KEYCODE_BUTTON_B
-KeyCodes.KEYCODE_BUTTON_C
-KeyCodes.KEYCODE_BUTTON_X
-KeyCodes.KEYCODE_BUTTON_Y
-KeyCodes.KEYCODE_BUTTON_Z
-KeyCodes.KEYCODE_BUTTON_L1
-KeyCodes.KEYCODE_BUTTON_R1
-KeyCodes.KEYCODE_BUTTON_L2
-KeyCodes.KEYCODE_BUTTON_R2
-KeyCodes.KEYCODE_BUTTON_THUMBL
-KeyCodes.KEYCODE_BUTTON_THUMBR
-KeyCodes.KEYCODE_BUTTON_START
-KeyCodes.KEYCODE_BUTTON_SELECT
-KeyCodes.KEYCODE_BUTTON_MODE
-KeyCodes.KEYCODE_ESCAPE
-KeyCodes.KEYCODE_FORWARD_DEL
-KeyCodes.KEYCODE_CTRL_LEFT
-KeyCodes.KEYCODE_CTRL_RIGHT
-KeyCodes.KEYCODE_CAPS_LOCK
-KeyCodes.KEYCODE_SCROLL_LOCK
-KeyCodes.KEYCODE_META_LEFT
-KeyCodes.KEYCODE_META_RIGHT
-KeyCodes.KEYCODE_FUNCTION
-KeyCodes.KEYCODE_SYSRQ
-KeyCodes.KEYCODE_BREAK
-KeyCodes.KEYCODE_MOVE_HOME
-KeyCodes.KEYCODE_MOVE_END
-KeyCodes.KEYCODE_INSERT
-KeyCodes.KEYCODE_FORWARD
-KeyCodes.KEYCODE_MEDIA_PLAY
-KeyCodes.KEYCODE_MEDIA_PAUSE
-KeyCodes.KEYCODE_MEDIA_CLOSE
-KeyCodes.KEYCODE_MEDIA_EJECT
-KeyCodes.KEYCODE_MEDIA_RECORD
-KeyCodes.KEYCODE_F1
-KeyCodes.KEYCODE_F2
-KeyCodes.KEYCODE_F3
-KeyCodes.KEYCODE_F4
-KeyCodes.KEYCODE_F5
-KeyCodes.KEYCODE_F6
-KeyCodes.KEYCODE_F7
-KeyCodes.KEYCODE_F8
-KeyCodes.KEYCODE_F9
-KeyCodes.KEYCODE_F10
-KeyCodes.KEYCODE_F11
-KeyCodes.KEYCODE_F12
-KeyCodes.KEYCODE_NUM_LOCK
-KeyCodes.KEYCODE_NUMPAD_0
-KeyCodes.KEYCODE_NUMPAD_1
-KeyCodes.KEYCODE_NUMPAD_2
-KeyCodes.KEYCODE_NUMPAD_3
-KeyCodes.KEYCODE_NUMPAD_4
-KeyCodes.KEYCODE_NUMPAD_5
-KeyCodes.KEYCODE_NUMPAD_6
-KeyCodes.KEYCODE_NUMPAD_7
-KeyCodes.KEYCODE_NUMPAD_8
-KeyCodes.KEYCODE_NUMPAD_9
-KeyCodes.KEYCODE_NUMPAD_DIVIDE
-KeyCodes.KEYCODE_NUMPAD_MULTIPLY
-KeyCodes.KEYCODE_NUMPAD_SUBTRACT
-KeyCodes.KEYCODE_NUMPAD_ADD
-KeyCodes.KEYCODE_NUMPAD_DOT
-KeyCodes.KEYCODE_NUMPAD_COMMA
-KeyCodes.KEYCODE_NUMPAD_ENTER
-KeyCodes.KEYCODE_NUMPAD_EQUALS
-KeyCodes.KEYCODE_NUMPAD_LEFT_PAREN
-KeyCodes.KEYCODE_NUMPAD_RIGHT_PAREN
-KeyCodes.KEYCODE_VOLUME_MUTE
-KeyCodes.KEYCODE_INFO
-KeyCodes.KEYCODE_CHANNEL_UP
-KeyCodes.KEYCODE_CHANNEL_DOWN
-KeyCodes.KEYCODE_ZOOM_IN
-KeyCodes.KEYCODE_ZOOM_OUT
-KeyCodes.KEYCODE_TV
-KeyCodes.KEYCODE_WINDOW
-KeyCodes.KEYCODE_GUIDE
-KeyCodes.KEYCODE_DVR
-KeyCodes.KEYCODE_BOOKMARK
-KeyCodes.KEYCODE_CAPTIONS
-KeyCodes.KEYCODE_SETTINGS
-KeyCodes.KEYCODE_TV_POWER
-KeyCodes.KEYCODE_TV_INPUT
-KeyCodes.KEYCODE_STB_POWER
-KeyCodes.KEYCODE_STB_INPUT
-KeyCodes.KEYCODE_AVR_POWER
-KeyCodes.KEYCODE_AVR_INPUT
-KeyCodes.KEYCODE_PROG_RED
-KeyCodes.KEYCODE_PROG_GREEN
-KeyCodes.KEYCODE_PROG_YELLOW
-KeyCodes.KEYCODE_PROG_BLUE
-KeyCodes.KEYCODE_APP_SWITCH
-KeyCodes.KEYCODE_BUTTON_1
-KeyCodes.KEYCODE_BUTTON_2
-KeyCodes.KEYCODE_BUTTON_3
-KeyCodes.KEYCODE_BUTTON_4
-KeyCodes.KEYCODE_BUTTON_5
-KeyCodes.KEYCODE_BUTTON_6
-KeyCodes.KEYCODE_BUTTON_7
-KeyCodes.KEYCODE_BUTTON_8
-KeyCodes.KEYCODE_BUTTON_9
-KeyCodes.KEYCODE_BUTTON_10
-KeyCodes.KEYCODE_BUTTON_11
-KeyCodes.KEYCODE_BUTTON_12
-KeyCodes.KEYCODE_BUTTON_13
-KeyCodes.KEYCODE_BUTTON_14
-KeyCodes.KEYCODE_BUTTON_15
-KeyCodes.KEYCODE_BUTTON_16
-KeyCodes.KEYCODE_LANGUAGE_SWITCH
-KeyCodes.KEYCODE_MANNER_MODE
-KeyCodes.KEYCODE_3D_MODE
-KeyCodes.KEYCODE_CONTACTS
-KeyCodes.KEYCODE_CALENDAR
-KeyCodes.KEYCODE_MUSIC
-KeyCodes.KEYCODE_CALCULATOR
-KeyCodes.KEYCODE_ZENKAKU_HANKAKU
-KeyCodes.KEYCODE_EISU
-KeyCodes.KEYCODE_MUHENKAN
-KeyCodes.KEYCODE_HENKAN
-KeyCodes.KEYCODE_KATAKANA_HIRAGANA
-KeyCodes.KEYCODE_YEN
-KeyCodes.KEYCODE_RO
-KeyCodes.KEYCODE_KANA
-KeyCodes.KEYCODE_ASSIST
-KeyCodes.KEYCODE_BRIGHTNESS_DOWN
-KeyCodes.KEYCODE_BRIGHTNESS_UP
-KeyCodes.KEYCODE_MEDIA_AUDIO_TRACK
-KeyCodes.KEYCODE_SLEEP
-KeyCodes.KEYCODE_WAKEUP
-KeyCodes.KEYCODE_PAIRING
-KeyCodes.KEYCODE_MEDIA_TOP_MENU
-KeyCodes.KEYCODE_11
-KeyCodes.KEYCODE_12
-KeyCodes.KEYCODE_LAST_CHANNEL
-KeyCodes.KEYCODE_TV_DATA_SERVICE
-KeyCodes.KEYCODE_VOICE_ASSIST
-KeyCodes.KEYCODE_TV_RADIO_SERVICE
-KeyCodes.KEYCODE_TV_TELETEXT
-KeyCodes.KEYCODE_TV_NUMBER_ENTRY
-KeyCodes.KEYCODE_TV_TERRESTRIAL_ANALOG
-KeyCodes.KEYCODE_TV_TERRESTRIAL_DIGITAL
-KeyCodes.KEYCODE_TV_SATELLITE
-KeyCodes.KEYCODE_TV_SATELLITE_BS
-KeyCodes.KEYCODE_TV_SATELLITE_CS
-KeyCodes.KEYCODE_TV_SATELLITE_SERVICE
-KeyCodes.KEYCODE_TV_NETWORK
-KeyCodes.KEYCODE_TV_ANTENNA_CABLE
-KeyCodes.KEYCODE_TV_INPUT_HDMI_1
-KeyCodes.KEYCODE_TV_INPUT_HDMI_2
-KeyCodes.KEYCODE_TV_INPUT_HDMI_3
-KeyCodes.KEYCODE_TV_INPUT_HDMI_4
-KeyCodes.KEYCODE_TV_INPUT_COMPOSITE_1
-KeyCodes.KEYCODE_TV_INPUT_COMPOSITE_2
-KeyCodes.KEYCODE_TV_INPUT_COMPONENT_1
-KeyCodes.KEYCODE_TV_INPUT_COMPONENT_2
-KeyCodes.KEYCODE_TV_INPUT_VGA_1
-KeyCodes.KEYCODE_TV_AUDIO_DESCRIPTION
-KeyCodes.KEYCODE_TV_AUDIO_DESCRIPTION_MIX_UP
-KeyCodes.KEYCODE_TV_AUDIO_DESCRIPTION_MIX_DOWN
-KeyCodes.KEYCODE_TV_ZOOM_MODE
-KeyCodes.KEYCODE_TV_CONTENTS_MENU
-KeyCodes.KEYCODE_TV_MEDIA_CONTEXT_MENU
-KeyCodes.KEYCODE_TV_TIMER_PROGRAMMING
-KeyCodes.KEYCODE_HELP
-KeyCodes.KEYCODE_NAVIGATE_PREVIOUS
-KeyCodes.KEYCODE_NAVIGATE_NEXT
-KeyCodes.KEYCODE_NAVIGATE_IN
-KeyCodes.KEYCODE_NAVIGATE_OUT
-KeyCodes.KEYCODE_STEM_PRIMARY
-KeyCodes.KEYCODE_STEM_1
-KeyCodes.KEYCODE_STEM_2
-KeyCodes.KEYCODE_STEM_3
-KeyCodes.KEYCODE_DPAD_UP_LEFT
-KeyCodes.KEYCODE_DPAD_DOWN_LEFT
-KeyCodes.KEYCODE_DPAD_UP_RIGHT
-KeyCodes.KEYCODE_DPAD_DOWN_RIGHT
-KeyCodes.KEYCODE_MEDIA_SKIP_FORWARD
-KeyCodes.KEYCODE_MEDIA_SKIP_BACKWARD
-KeyCodes.KEYCODE_MEDIA_STEP_FORWARD
-KeyCodes.KEYCODE_MEDIA_STEP_BACKWARD
-KeyCodes.KEYCODE_SOFT_SLEEP
-KeyCodes.KEYCODE_CUT
-KeyCodes.KEYCODE_COPY
-KeyCodes.KEYCODE_PASTE
-KeyCodes.KEYCODE_SYSTEM_NAVIGATION_UP
-KeyCodes.KEYCODE_SYSTEM_NAVIGATION_DOWN
-KeyCodes.KEYCODE_SYSTEM_NAVIGATION_LEFT
-KeyCodes.KEYCODE_SYSTEM_NAVIGATION_RIGHT
-KeyCodes.KEYCODE_ALL_APPS
-KeyCodes.KEYCODE_REFRESH
-KeyCodes.KEYCODE_THUMBS_UP
-KeyCodes.KEYCODE_THUMBS_DOWN
-KeyCodes.KEYCODE_PROFILE_SWITCH
-KeyCodes.KEYCODE_VIDEO_APP_1
-KeyCodes.KEYCODE_VIDEO_APP_2
-KeyCodes.KEYCODE_VIDEO_APP_3
-KeyCodes.KEYCODE_VIDEO_APP_4
-KeyCodes.KEYCODE_VIDEO_APP_5
-KeyCodes.KEYCODE_VIDEO_APP_6
-KeyCodes.KEYCODE_VIDEO_APP_7
-KeyCodes.KEYCODE_VIDEO_APP_8
-KeyCodes.KEYCODE_FEATURED_APP_1
-KeyCodes.KEYCODE_FEATURED_APP_2
-KeyCodes.KEYCODE_FEATURED_APP_3
-KeyCodes.KEYCODE_FEATURED_APP_4
-KeyCodes.KEYCODE_DEMO_APP_1
-KeyCodes.KEYCODE_DEMO_APP_2
-KeyCodes.KEYCODE_DEMO_APP_3
-KeyCodes.KEYCODE_DEMO_APP_4
+
+```python
+
+class KeyCodes(Enum):
+    KEYCODE_UNKNOWN = 0
+    KEYCODE_SOFT_LEFT = 1
+    KEYCODE_SOFT_RIGHT = 2
+    KEYCODE_HOME = 3
+    KEYCODE_BACK = 4
+    KEYCODE_CALL = 5
+    KEYCODE_ENDCALL = 6
+    KEYCODE_0 = 7
+    KEYCODE_1 = 8
+    KEYCODE_2 = 9
+    KEYCODE_3 = 10
+    KEYCODE_4 = 11
+    KEYCODE_5 = 12
+    KEYCODE_6 = 13
+    KEYCODE_7 = 14
+    KEYCODE_8 = 15
+    KEYCODE_9 = 16
+    KEYCODE_STAR = 17
+    KEYCODE_POUND = 18
+    KEYCODE_DPAD_UP = 19
+    KEYCODE_DPAD_DOWN = 20
+    KEYCODE_DPAD_LEFT = 21
+    KEYCODE_DPAD_RIGHT = 22
+    KEYCODE_DPAD_CENTER = 23
+    KEYCODE_VOLUME_UP = 24
+    KEYCODE_VOLUME_DOWN = 25
+    KEYCODE_POWER = 26
+    KEYCODE_CAMERA = 27
+    KEYCODE_CLEAR = 28
+    KEYCODE_A = 29
+    KEYCODE_B = 30
+    KEYCODE_C = 31
+    KEYCODE_D = 32
+    KEYCODE_E = 33
+    KEYCODE_F = 34
+    KEYCODE_G = 35
+    KEYCODE_H = 36
+    KEYCODE_I = 37
+    KEYCODE_J = 38
+    KEYCODE_K = 39
+    KEYCODE_L = 40
+    KEYCODE_M = 41
+    KEYCODE_N = 42
+    KEYCODE_O = 43
+    KEYCODE_P = 44
+    KEYCODE_Q = 45
+    KEYCODE_R = 46
+    KEYCODE_S = 47
+    KEYCODE_T = 48
+    KEYCODE_U = 49
+    KEYCODE_V = 50
+    KEYCODE_W = 51
+    KEYCODE_X = 52
+    KEYCODE_Y = 53
+    KEYCODE_Z = 54
+    KEYCODE_COMMA = 55
+    KEYCODE_PERIOD = 56
+    KEYCODE_ALT_LEFT = 57
+    KEYCODE_ALT_RIGHT = 58
+    KEYCODE_SHIFT_LEFT = 59
+    KEYCODE_SHIFT_RIGHT = 60
+    KEYCODE_TAB = 61
+    KEYCODE_SPACE = 62
+    KEYCODE_SYM = 63
+    KEYCODE_EXPLORER = 64
+    KEYCODE_ENVELOPE = 65
+    KEYCODE_ENTER = 66
+    KEYCODE_DEL = 67
+    KEYCODE_GRAVE = 68
+    KEYCODE_MINUS = 69
+    KEYCODE_EQUALS = 70
+    KEYCODE_LEFT_BRACKET = 71
+    KEYCODE_RIGHT_BRACKET = 72
+    KEYCODE_BACKSLASH = 73
+    KEYCODE_SEMICOLON = 74
+    KEYCODE_APOSTROPHE = 75
+    KEYCODE_SLASH = 76
+    KEYCODE_AT = 77
+    KEYCODE_NUM = 78
+    KEYCODE_HEADSETHOOK = 79
+    KEYCODE_FOCUS = 80
+    KEYCODE_PLUS = 81
+    KEYCODE_MENU = 82
+    KEYCODE_NOTIFICATION = 83
+    KEYCODE_SEARCH = 84
+    KEYCODE_MEDIA_PLAY_PAUSE = 85
+    KEYCODE_MEDIA_STOP = 86
+    KEYCODE_MEDIA_NEXT = 87
+    KEYCODE_MEDIA_PREVIOUS = 88
+    KEYCODE_MEDIA_REWIND = 89
+    KEYCODE_MEDIA_FAST_FORWARD = 90
+    KEYCODE_MUTE = 91
+    KEYCODE_PAGE_UP = 92
+    KEYCODE_PAGE_DOWN = 93
+    KEYCODE_PICTSYMBOLS = 94
+    KEYCODE_SWITCH_CHARSET = 95
+    KEYCODE_BUTTON_A = 96
+    KEYCODE_BUTTON_B = 97
+    KEYCODE_BUTTON_C = 98
+    KEYCODE_BUTTON_X = 99
+    KEYCODE_BUTTON_Y = 100
+    KEYCODE_BUTTON_Z = 101
+    KEYCODE_BUTTON_L1 = 102
+    KEYCODE_BUTTON_R1 = 103
+    KEYCODE_BUTTON_L2 = 104
+    KEYCODE_BUTTON_R2 = 105
+    KEYCODE_BUTTON_THUMBL = 106
+    KEYCODE_BUTTON_THUMBR = 107
+    KEYCODE_BUTTON_START = 108
+    KEYCODE_BUTTON_SELECT = 109
+    KEYCODE_BUTTON_MODE = 110
+    KEYCODE_ESCAPE = 111
+    KEYCODE_FORWARD_DEL = 112
+    KEYCODE_CTRL_LEFT = 113
+    KEYCODE_CTRL_RIGHT = 114
+    KEYCODE_CAPS_LOCK = 115
+    KEYCODE_SCROLL_LOCK = 116
+    KEYCODE_META_LEFT = 117
+    KEYCODE_META_RIGHT = 118
+    KEYCODE_FUNCTION = 119
+    KEYCODE_SYSRQ = 120
+    KEYCODE_BREAK = 121
+    KEYCODE_MOVE_HOME = 122
+    KEYCODE_MOVE_END = 123
+    KEYCODE_INSERT = 124
+    KEYCODE_FORWARD = 125
+    KEYCODE_MEDIA_PLAY = 126
+    KEYCODE_MEDIA_PAUSE = 127
+    KEYCODE_MEDIA_CLOSE = 128
+    KEYCODE_MEDIA_EJECT = 129
+    KEYCODE_MEDIA_RECORD = 130
+    KEYCODE_F1 = 131
+    KEYCODE_F2 = 132
+    KEYCODE_F3 = 133
+    KEYCODE_F4 = 134
+    KEYCODE_F5 = 135
+    KEYCODE_F6 = 136
+    KEYCODE_F7 = 137
+    KEYCODE_F8 = 138
+    KEYCODE_F9 = 139
+    KEYCODE_F10 = 140
+    KEYCODE_F11 = 141
+    KEYCODE_F12 = 142
+    KEYCODE_NUM_LOCK = 143
+    KEYCODE_NUMPAD_0 = 144
+    KEYCODE_NUMPAD_1 = 145
+    KEYCODE_NUMPAD_2 = 146
+    KEYCODE_NUMPAD_3 = 147
+    KEYCODE_NUMPAD_4 = 148
+    KEYCODE_NUMPAD_5 = 149
+    KEYCODE_NUMPAD_6 = 150
+    KEYCODE_NUMPAD_7 = 151
+    KEYCODE_NUMPAD_8 = 152
+    KEYCODE_NUMPAD_9 = 153
+    KEYCODE_NUMPAD_DIVIDE = 154
+    KEYCODE_NUMPAD_MULTIPLY = 155
+    KEYCODE_NUMPAD_SUBTRACT = 156
+    KEYCODE_NUMPAD_ADD = 157
+    KEYCODE_NUMPAD_DOT = 158
+    KEYCODE_NUMPAD_COMMA = 159
+    KEYCODE_NUMPAD_ENTER = 160
+    KEYCODE_NUMPAD_EQUALS = 161
+    KEYCODE_NUMPAD_LEFT_PAREN = 162
+    KEYCODE_NUMPAD_RIGHT_PAREN = 163
+    KEYCODE_VOLUME_MUTE = 164
+    KEYCODE_INFO = 165
+    KEYCODE_CHANNEL_UP = 166
+    KEYCODE_CHANNEL_DOWN = 167
+    KEYCODE_ZOOM_IN = 168
+    KEYCODE_ZOOM_OUT = 169
+    KEYCODE_TV = 170
+    KEYCODE_WINDOW = 171
+    KEYCODE_GUIDE = 172
+    KEYCODE_DVR = 173
+    KEYCODE_BOOKMARK = 174
+    KEYCODE_CAPTIONS = 175
+    KEYCODE_SETTINGS = 176
+    KEYCODE_TV_POWER = 177
+    KEYCODE_TV_INPUT = 178
+    KEYCODE_STB_POWER = 179
+    KEYCODE_STB_INPUT = 180
+    KEYCODE_AVR_POWER = 181
+    KEYCODE_AVR_INPUT = 182
+    KEYCODE_PROG_RED = 183
+    KEYCODE_PROG_GREEN = 184
+    KEYCODE_PROG_YELLOW = 185
+    KEYCODE_PROG_BLUE = 186
+    KEYCODE_APP_SWITCH = 187
+    KEYCODE_BUTTON_1 = 188
+    KEYCODE_BUTTON_2 = 189
+    KEYCODE_BUTTON_3 = 190
+    KEYCODE_BUTTON_4 = 191
+    KEYCODE_BUTTON_5 = 192
+    KEYCODE_BUTTON_6 = 193
+    KEYCODE_BUTTON_7 = 194
+    KEYCODE_BUTTON_8 = 195
+    KEYCODE_BUTTON_9 = 196
+    KEYCODE_BUTTON_10 = 197
+    KEYCODE_BUTTON_11 = 198
+    KEYCODE_BUTTON_12 = 199
+    KEYCODE_BUTTON_13 = 200
+    KEYCODE_BUTTON_14 = 201
+    KEYCODE_BUTTON_15 = 202
+    KEYCODE_BUTTON_16 = 203
+    KEYCODE_LANGUAGE_SWITCH = 204
+    KEYCODE_MANNER_MODE = 205
+    KEYCODE_3D_MODE = 206
+    KEYCODE_CONTACTS = 207
+    KEYCODE_CALENDAR = 208
+    KEYCODE_MUSIC = 209
+    KEYCODE_CALCULATOR = 210
+    KEYCODE_ZENKAKU_HANKAKU = 211
+    KEYCODE_EISU = 212
+    KEYCODE_MUHENKAN = 213
+    KEYCODE_HENKAN = 214
+    KEYCODE_KATAKANA_HIRAGANA = 215
+    KEYCODE_YEN = 216
+    KEYCODE_RO = 217
+    KEYCODE_KANA = 218
+    KEYCODE_ASSIST = 219
+    KEYCODE_BRIGHTNESS_DOWN = 220
+    KEYCODE_BRIGHTNESS_UP = 221
+    KEYCODE_MEDIA_AUDIO_TRACK = 222
+    KEYCODE_SLEEP = 223
+    KEYCODE_WAKEUP = 224
+    KEYCODE_PAIRING = 225
+    KEYCODE_MEDIA_TOP_MENU = 226
+    KEYCODE_11 = 227
+    KEYCODE_12 = 228
+    KEYCODE_LAST_CHANNEL = 229
+    KEYCODE_TV_DATA_SERVICE = 230
+    KEYCODE_VOICE_ASSIST = 231
+    KEYCODE_TV_RADIO_SERVICE = 232
+    KEYCODE_TV_TELETEXT = 233
+    KEYCODE_TV_NUMBER_ENTRY = 234
+    KEYCODE_TV_TERRESTRIAL_ANALOG = 235
+    KEYCODE_TV_TERRESTRIAL_DIGITAL = 236
+    KEYCODE_TV_SATELLITE = 237
+    KEYCODE_TV_SATELLITE_BS = 238
+    KEYCODE_TV_SATELLITE_CS = 239
+    KEYCODE_TV_SATELLITE_SERVICE = 240
+    KEYCODE_TV_NETWORK = 241
+    KEYCODE_TV_ANTENNA_CABLE = 242
+    KEYCODE_TV_INPUT_HDMI_1 = 243
+    KEYCODE_TV_INPUT_HDMI_2 = 244
+    KEYCODE_TV_INPUT_HDMI_3 = 245
+    KEYCODE_TV_INPUT_HDMI_4 = 246
+    KEYCODE_TV_INPUT_COMPOSITE_1 = 247
+    KEYCODE_TV_INPUT_COMPOSITE_2 = 248
+    KEYCODE_TV_INPUT_COMPONENT_1 = 249
+    KEYCODE_TV_INPUT_COMPONENT_2 = 250
+    KEYCODE_TV_INPUT_VGA_1 = 251
+    KEYCODE_TV_AUDIO_DESCRIPTION = 252
+    KEYCODE_TV_AUDIO_DESCRIPTION_MIX_UP = 253
+    KEYCODE_TV_AUDIO_DESCRIPTION_MIX_DOWN = 254
+    KEYCODE_TV_ZOOM_MODE = 255
+    KEYCODE_TV_CONTENTS_MENU = 256
+    KEYCODE_TV_MEDIA_CONTEXT_MENU = 257
+    KEYCODE_TV_TIMER_PROGRAMMING = 258
+    KEYCODE_HELP = 259
+    KEYCODE_NAVIGATE_PREVIOUS = 260
+    KEYCODE_NAVIGATE_NEXT = 261
+    KEYCODE_NAVIGATE_IN = 262
+    KEYCODE_NAVIGATE_OUT = 263
+    KEYCODE_STEM_PRIMARY = 264
+    KEYCODE_STEM_1 = 265
+    KEYCODE_STEM_2 = 266
+    KEYCODE_STEM_3 = 267
+    KEYCODE_DPAD_UP_LEFT = 268
+    KEYCODE_DPAD_DOWN_LEFT = 269
+    KEYCODE_DPAD_UP_RIGHT = 270
+    KEYCODE_DPAD_DOWN_RIGHT = 271
+    KEYCODE_MEDIA_SKIP_FORWARD = 272
+    KEYCODE_MEDIA_SKIP_BACKWARD = 273
+    KEYCODE_MEDIA_STEP_FORWARD = 274
+    KEYCODE_MEDIA_STEP_BACKWARD = 275
+    KEYCODE_SOFT_SLEEP = 276
+    KEYCODE_CUT = 277
+    KEYCODE_COPY = 278
+    KEYCODE_PASTE = 279
+    KEYCODE_SYSTEM_NAVIGATION_UP = 280
+    KEYCODE_SYSTEM_NAVIGATION_DOWN = 281
+    KEYCODE_SYSTEM_NAVIGATION_LEFT = 282
+    KEYCODE_SYSTEM_NAVIGATION_RIGHT = 283
+    KEYCODE_ALL_APPS = 284
+    KEYCODE_REFRESH = 285
+    KEYCODE_THUMBS_UP = 286
+    KEYCODE_THUMBS_DOWN = 287
+    KEYCODE_PROFILE_SWITCH = 288
+    KEYCODE_VIDEO_APP_1 = 289
+    KEYCODE_VIDEO_APP_2 = 290
+    KEYCODE_VIDEO_APP_3 = 291
+    KEYCODE_VIDEO_APP_4 = 292
+    KEYCODE_VIDEO_APP_5 = 293
+    KEYCODE_VIDEO_APP_6 = 294
+    KEYCODE_VIDEO_APP_7 = 295
+    KEYCODE_VIDEO_APP_8 = 296
+    KEYCODE_FEATURED_APP_1 = 297
+    KEYCODE_FEATURED_APP_2 = 298
+    KEYCODE_FEATURED_APP_3 = 299
+    KEYCODE_FEATURED_APP_4 = 300
+    KEYCODE_DEMO_APP_1 = 301
+    KEYCODE_DEMO_APP_2 = 302
+    KEYCODE_DEMO_APP_3 = 303
+    KEYCODE_DEMO_APP_4 = 304
+
 ```
+
 ## Documentation
 
-For detailed usage instructions and a complete list of available commands, refer to the comprehensive documentation: https://jekso.github.io/AndroidTV-Remote-Controller/
+For detailed usage instructions and a complete list of available commands, refer to the comprehensive documentation: <https://jekso.github.io/AndroidTV-Remote-Controller/>
 
 ## Contributing
 
