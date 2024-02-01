@@ -52,6 +52,14 @@ class ADBClient:
         3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
             you can follow this link `https://www.makeuseof.com/how-to-use-adb-on-android-tv/`
         
+        Some important resources:
+            https://developer.android.com/tools/adb
+            https://developer.android.com/studio/command-line/adb
+            https://technastic.com/set-up-adb-over-wifi-android/
+            https://technastic.com/adb-shell-commands-list/
+            https://technastic.com/adb-commands-list-adb-cheat-sheet/
+            https://www.makeuseof.com/how-to-use-adb-on-android-tv/
+        
         Args:
             verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
                 enable verbose logging. If set to `True`, it will display additional information during the
@@ -780,6 +788,8 @@ class ADBClient:
             keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
             long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = f&#39;input keyevent {keycode.name}&#39;
         if long_press:
             command += &#39; --longpress&#39;
@@ -795,6 +805,8 @@ class ADBClient:
             text (str): the text string to send.
             encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
         self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>
@@ -821,6 +833,13 @@ communication with Android TV devices in TCP Wireless mode.
 2-Make sure your computer running the python library and the android device is on the same network.
 3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
 you can follow this link <code>https://www.makeuseof.com/how-to-use-adb-on-android-tv/</code></p>
+<p>Some important resources:
+<a href="https://developer.android.com/tools/adb">https://developer.android.com/tools/adb</a>
+<a href="https://developer.android.com/studio/command-line/adb">https://developer.android.com/studio/command-line/adb</a>
+<a href="https://technastic.com/set-up-adb-over-wifi-android/">https://technastic.com/set-up-adb-over-wifi-android/</a>
+<a href="https://technastic.com/adb-shell-commands-list/">https://technastic.com/adb-shell-commands-list/</a>
+<a href="https://technastic.com/adb-commands-list-adb-cheat-sheet/">https://technastic.com/adb-commands-list-adb-cheat-sheet/</a>
+<a href="https://www.makeuseof.com/how-to-use-adb-on-android-tv/">https://www.makeuseof.com/how-to-use-adb-on-android-tv/</a></p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code></dt>
@@ -853,6 +872,14 @@ Defaults to False.</dd>
         3-Enable the USB/Wireless/ADB debugging feature on your android TV device depending on your version &amp; get your TV IP address.
             you can follow this link `https://www.makeuseof.com/how-to-use-adb-on-android-tv/`
         
+        Some important resources:
+            https://developer.android.com/tools/adb
+            https://developer.android.com/studio/command-line/adb
+            https://technastic.com/set-up-adb-over-wifi-android/
+            https://technastic.com/adb-shell-commands-list/
+            https://technastic.com/adb-commands-list-adb-cheat-sheet/
+            https://www.makeuseof.com/how-to-use-adb-on-android-tv/
+        
         Args:
             verbose (bool): The `verbose` parameter is a boolean flag that determines whether or not to
                 enable verbose logging. If set to `True`, it will display additional information during the
@@ -1581,6 +1608,8 @@ Defaults to False.</dd>
             keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
             long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         command = f&#39;input keyevent {keycode.name}&#39;
         if long_press:
             command += &#39; --longpress&#39;
@@ -1596,6 +1625,8 @@ Defaults to False.</dd>
             text (str): the text string to send.
             encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
         &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
         processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
         self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>
@@ -2430,6 +2461,8 @@ number of a device.</dd>
         keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
         long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     command = f&#39;input keyevent {keycode.name}&#39;
     if long_press:
         command += &#39; --longpress&#39;
@@ -2460,6 +2493,8 @@ number of a device.</dd>
         text (str): the text string to send.
         encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
     &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
     processed_text = text.replace(&#39; &#39;, &#39;%s&#39;) if encode_spaces else text
     self.execute_shell_command(f&#39;input text {processed_text}&#39;)</code></pre>
 </details>

@@ -51,10 +51,26 @@ class AndroidTVController:
                 Defaults to False.
         &#34;&#34;&#34;
         self.__adb_client = ADBClient(verbose, show_command)
-        self.__adb_client.connect(ip)
+        self.__ip = ip
     
     
     
+    def connect(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Start connection to TV IP.
+        &#34;&#34;&#34;
+        return self.__adb_client.connect(self.__ip)
+    
+    
+    
+    def is_connected(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if connection is successfully established.
+        &#34;&#34;&#34;
+        return self.__adb_client.is_connected(self.__ip)
+        
+        
+        
     def get_adb_client(self):
         &#34;&#34;&#34;
         Return the adb session client.
@@ -213,7 +229,7 @@ class AndroidTVController:
 
     
     
-    def open_app(self, package: str, activity: str):
+    def open_app(self, app: AndroidTVApps):
         &#34;&#34;&#34;
         The function starts app with the specified package and activity.
         
@@ -223,50 +239,41 @@ class AndroidTVController:
         and try to interpret the output dump to extract the main launcher activity.
     
         Args:
-            package (str): The package parameter is a string that represents the package name of the
-                Android application you want to start. This is typically the unique identifier for the app and
-                is specified in the AndroidManifest.xml file of the app.
-            activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
-                Android app that you want to start. An activity represents a single screen with a user
-                interface, and it is the basic building block of an Android app. Each activity has a unique name
-                that is specified in the AndroidManifest.xml file
+            app (AndroidTVApps): The app name in form of package/activity.
         &#34;&#34;&#34;
+        package, activity = app.value.split(&#39;/&#39;)
         self.__adb_client.start_app(package, activity)
 
     
     
     def open_youtube(self):
         &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
-        app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.YOUTUBE)
     
     
     
     def open_netflix(self):
         &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
-        app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.NETFLIX)
+
     
     
     
     def open_amazon_prime(self):
         &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
-        app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.AMAZON_PRIME)
         
         
         
     def open_watch_it(self):
         &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
-        app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.WATCH_IT)
         
     
     
     def open_shahid(self):
         &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
-        app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])</code></pre>
+        self.open_app(AndroidTVApps.SHAHID)</code></pre>
 </details>
 </section>
 <section>
@@ -323,10 +330,26 @@ Defaults to False.</dd>
                 Defaults to False.
         &#34;&#34;&#34;
         self.__adb_client = ADBClient(verbose, show_command)
-        self.__adb_client.connect(ip)
+        self.__ip = ip
     
     
     
+    def connect(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Start connection to TV IP.
+        &#34;&#34;&#34;
+        return self.__adb_client.connect(self.__ip)
+    
+    
+    
+    def is_connected(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if connection is successfully established.
+        &#34;&#34;&#34;
+        return self.__adb_client.is_connected(self.__ip)
+        
+        
+        
     def get_adb_client(self):
         &#34;&#34;&#34;
         Return the adb session client.
@@ -485,7 +508,7 @@ Defaults to False.</dd>
 
     
     
-    def open_app(self, package: str, activity: str):
+    def open_app(self, app: AndroidTVApps):
         &#34;&#34;&#34;
         The function starts app with the specified package and activity.
         
@@ -495,53 +518,60 @@ Defaults to False.</dd>
         and try to interpret the output dump to extract the main launcher activity.
     
         Args:
-            package (str): The package parameter is a string that represents the package name of the
-                Android application you want to start. This is typically the unique identifier for the app and
-                is specified in the AndroidManifest.xml file of the app.
-            activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
-                Android app that you want to start. An activity represents a single screen with a user
-                interface, and it is the basic building block of an Android app. Each activity has a unique name
-                that is specified in the AndroidManifest.xml file
+            app (AndroidTVApps): The app name in form of package/activity.
         &#34;&#34;&#34;
+        package, activity = app.value.split(&#39;/&#39;)
         self.__adb_client.start_app(package, activity)
 
     
     
     def open_youtube(self):
         &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
-        app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.YOUTUBE)
     
     
     
     def open_netflix(self):
         &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
-        app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.NETFLIX)
+
     
     
     
     def open_amazon_prime(self):
         &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
-        app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.AMAZON_PRIME)
         
         
         
     def open_watch_it(self):
         &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
-        app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.WATCH_IT)
         
     
     
     def open_shahid(self):
         &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
-        app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
-        self.open_app(app[0], app[1])</code></pre>
+        self.open_app(AndroidTVApps.SHAHID)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.connect"><code class="name flex">
+<span>def <span class="ident">connect</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Start connection to TV IP.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect(self) -&gt; bool:
+    &#34;&#34;&#34;
+    Start connection to TV IP.
+    &#34;&#34;&#34;
+    return self.__adb_client.connect(self.__ip)</code></pre>
+</details>
+</dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client"><code class="name flex">
 <span>def <span class="ident">get_adb_client</span></span>(<span>self)</span>
 </code></dt>
@@ -558,6 +588,22 @@ Defaults to False.</dd>
     return self.__adb_client</code></pre>
 </details>
 </dd>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_connected"><code class="name flex">
+<span>def <span class="ident">is_connected</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if connection is successfully established.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_connected(self) -&gt; bool:
+    &#34;&#34;&#34;
+    Check if connection is successfully established.
+    &#34;&#34;&#34;
+    return self.__adb_client.is_connected(self.__ip)</code></pre>
+</details>
+</dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">
 <span>def <span class="ident">open_amazon_prime</span></span>(<span>self)</span>
 </code></dt>
@@ -569,12 +615,11 @@ Defaults to False.</dd>
 </summary>
 <pre><code class="python">def open_amazon_prime(self):
     &#34;&#34;&#34;Opens Amazon Prime Video application&#34;&#34;&#34;
-    app = AndroidTVApps.AMAZON_PRIME.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
+    self.open_app(AndroidTVApps.AMAZON_PRIME)</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app"><code class="name flex">
-<span>def <span class="ident">open_app</span></span>(<span>self, package: str, activity: str)</span>
+<span>def <span class="ident">open_app</span></span>(<span>self, app: <a title="AndroidTVController.android_tv_rc.tv_apps.AndroidTVApps" href="tv_apps.html#AndroidTVController.android_tv_rc.tv_apps.AndroidTVApps">AndroidTVApps</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function starts app with the specified package and activity.</p>
@@ -584,21 +629,14 @@ To get main activity name use <code>adb_client.get_package_activities(package_na
 and try to interpret the output dump to extract the main launcher activity.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>package</code></strong> :&ensp;<code>str</code></dt>
-<dd>The package parameter is a string that represents the package name of the
-Android application you want to start. This is typically the unique identifier for the app and
-is specified in the AndroidManifest.xml file of the app.</dd>
-<dt><strong><code>activity</code></strong> :&ensp;<code>str</code></dt>
-<dd>The "activity" parameter refers to the specific activity or screen within the
-Android app that you want to start. An activity represents a single screen with a user
-interface, and it is the basic building block of an Android app. Each activity has a unique name
-that is specified in the AndroidManifest.xml file</dd>
+<dt><strong><code>app</code></strong> :&ensp;<code>AndroidTVApps</code></dt>
+<dd>The app name in form of package/activity.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def open_app(self, package: str, activity: str):
+<pre><code class="python">def open_app(self, app: AndroidTVApps):
     &#34;&#34;&#34;
     The function starts app with the specified package and activity.
     
@@ -608,14 +646,9 @@ that is specified in the AndroidManifest.xml file</dd>
     and try to interpret the output dump to extract the main launcher activity.
 
     Args:
-        package (str): The package parameter is a string that represents the package name of the
-            Android application you want to start. This is typically the unique identifier for the app and
-            is specified in the AndroidManifest.xml file of the app.
-        activity (str): The &#34;activity&#34; parameter refers to the specific activity or screen within the
-            Android app that you want to start. An activity represents a single screen with a user
-            interface, and it is the basic building block of an Android app. Each activity has a unique name
-            that is specified in the AndroidManifest.xml file
+        app (AndroidTVApps): The app name in form of package/activity.
     &#34;&#34;&#34;
+    package, activity = app.value.split(&#39;/&#39;)
     self.__adb_client.start_app(package, activity)</code></pre>
 </details>
 </dd>
@@ -630,8 +663,7 @@ that is specified in the AndroidManifest.xml file</dd>
 </summary>
 <pre><code class="python">def open_netflix(self):
     &#34;&#34;&#34;Opens Netflix application&#34;&#34;&#34;
-    app = AndroidTVApps.NETFLIX.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
+    self.open_app(AndroidTVApps.NETFLIX)</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_shahid"><code class="name flex">
@@ -645,8 +677,7 @@ that is specified in the AndroidManifest.xml file</dd>
 </summary>
 <pre><code class="python">def open_shahid(self):
     &#34;&#34;&#34;Opens Shahid application&#34;&#34;&#34;
-    app = AndroidTVApps.SHAHID.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
+    self.open_app(AndroidTVApps.SHAHID)</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_watch_it"><code class="name flex">
@@ -660,8 +691,7 @@ that is specified in the AndroidManifest.xml file</dd>
 </summary>
 <pre><code class="python">def open_watch_it(self):
     &#34;&#34;&#34;Opens Watch IT application&#34;&#34;&#34;
-    app = AndroidTVApps.WATCH_IT.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
+    self.open_app(AndroidTVApps.WATCH_IT)</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_youtube"><code class="name flex">
@@ -675,8 +705,7 @@ that is specified in the AndroidManifest.xml file</dd>
 </summary>
 <pre><code class="python">def open_youtube(self):
     &#34;&#34;&#34;Opens Youtube TV application&#34;&#34;&#34;
-    app = AndroidTVApps.YOUTUBE.value.split(&#39;/&#39;)
-    self.open_app(app[0], app[1])</code></pre>
+    self.open_app(AndroidTVApps.YOUTUBE)</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_back"><code class="name flex">
@@ -970,7 +999,9 @@ and it will take a few seconds to wake up when you press a button.</p></div>
 <li>
 <h4><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController">AndroidTVController</a></code></h4>
 <ul class="">
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.connect" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.connect">connect</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client">get_adb_client</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_connected" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_connected">is_connected</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime">open_amazon_prime</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app">open_app</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix">open_netflix</a></code></li>
