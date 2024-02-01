@@ -185,7 +185,7 @@ class AndroidTVController:
 
     
     
-    def open_app(self, package: str, activity: str):
+    def open_app(self, app: AndroidTVApps):
         """
         The function starts app with the specified package and activity.
         
@@ -195,47 +195,38 @@ class AndroidTVController:
         and try to interpret the output dump to extract the main launcher activity.
     
         Args:
-            package (str): The package parameter is a string that represents the package name of the
-                Android application you want to start. This is typically the unique identifier for the app and
-                is specified in the AndroidManifest.xml file of the app.
-            activity (str): The "activity" parameter refers to the specific activity or screen within the
-                Android app that you want to start. An activity represents a single screen with a user
-                interface, and it is the basic building block of an Android app. Each activity has a unique name
-                that is specified in the AndroidManifest.xml file
+            app (AndroidTVApps): The app name in form of package/activity.
         """
+        package, activity = app.value.split('/')
         self.__adb_client.start_app(package, activity)
 
     
     
     def open_youtube(self):
         """Opens Youtube TV application"""
-        app = AndroidTVApps.YOUTUBE.value.split('/')
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.YOUTUBE)
     
     
     
     def open_netflix(self):
         """Opens Netflix application"""
-        app = AndroidTVApps.NETFLIX.value.split('/')
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.NETFLIX)
+
     
     
     
     def open_amazon_prime(self):
         """Opens Amazon Prime Video application"""
-        app = AndroidTVApps.AMAZON_PRIME.value.split('/')
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.AMAZON_PRIME)
         
         
         
     def open_watch_it(self):
         """Opens Watch IT application"""
-        app = AndroidTVApps.WATCH_IT.value.split('/')
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.WATCH_IT)
         
     
     
     def open_shahid(self):
         """Opens Shahid application"""
-        app = AndroidTVApps.SHAHID.value.split('/')
-        self.open_app(app[0], app[1])
+        self.open_app(AndroidTVApps.SHAHID)
