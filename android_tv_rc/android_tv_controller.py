@@ -23,10 +23,26 @@ class AndroidTVController:
                 Defaults to False.
         """
         self.__adb_client = ADBClient(verbose, show_command)
-        self.__adb_client.connect(ip)
+        self.__ip = ip
     
     
     
+    def connect(self) -> bool:
+        """
+        Start connection to TV IP.
+        """
+        return self.__adb_client.connect(self.__ip)
+    
+    
+    
+    def is_connected(self) -> bool:
+        """
+        Check if connection is successfully established.
+        """
+        return self.__adb_client.is_connected(self.__ip)
+        
+        
+        
     def get_adb_client(self):
         """
         Return the adb session client.

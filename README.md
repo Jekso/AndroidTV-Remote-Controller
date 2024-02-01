@@ -63,6 +63,8 @@ from android_tv_rc import AndroidTVController
 # Then run the code again
 ip = '192.168.1.28'
 controller = AndroidTVController(ip)
+controller.connect()
+controller.is_connected()
 
 
 # --------------[ Navigation Commands ]--------------
