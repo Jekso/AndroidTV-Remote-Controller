@@ -760,6 +760,8 @@ class ADBClient:
             keycode (KeyCode): the keycode to send, table of key codes: https://www.temblast.com/ref/akeyscode.htm
             long_press (bool): specify if simulate a long press for the key or not. Defaults to False.
         """
+        if self.__selected_device is None:
+            return
         command = f'input keyevent {keycode.name}'
         if long_press:
             command += ' --longpress'
@@ -775,5 +777,7 @@ class ADBClient:
             text (str): the text string to send.
             encode_spaces (bool): specify if spaces should be replaced by `%s` or not. Defaults to True.
         """
+        if self.__selected_device is None:
+            return
         processed_text = text.replace(' ', '%s') if encode_spaces else text
         self.execute_shell_command(f'input text {processed_text}')
