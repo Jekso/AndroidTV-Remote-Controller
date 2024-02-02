@@ -17,7 +17,7 @@ This means you can use it to control your Android TV or even any android devices
   - List all packages and easily filter them as system, third-party, enabled, disabled apps.
   - Get package activities to easily use it for auto starting apps.
   - Interact with device shell and invoke any shell commands.
-  - Power On/Off, Sleep, Soft sleep & Wake up the TV.
+  - Check if TV is on of off, Power ON/OFF, Sleep, Soft sleep & Wake up the TV.
   - Easily navigate home screen and menus using D-Pad navigation
   - Control volume (up, down, mute)
   - Control TV channel buttons (up, down) or using channel number
