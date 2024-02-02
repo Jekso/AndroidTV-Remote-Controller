@@ -69,12 +69,13 @@ controller.is_connected()
 
 # --------------[ Navigation Commands ]--------------
 controller.press_home()
+controller.press_tv()
+controller.press_enter()
 controller.press_back()
 controller.press_dpad_up()
 controller.press_dpad_down()
 controller.press_dpad_left()
 controller.press_dpad_right()
-controller.press_enter()
 
 
 # --------------[ Volume Commands ]--------------
@@ -84,6 +85,7 @@ controller.press_volume_mute()
 
 
 # --------------[ Power Commands ]--------------
+controller.is_powered_on()
 controller.press_power()
 controller.press_sleep()
 controller.press_soft_sleep()
@@ -151,6 +153,7 @@ adb_client.stop_app('com.android.chrome')
 
 # --------------[ Device related Commands ]--------------
 adb_client.reboot()
+adb_client.is_powered_on()
 adb_client.execute_shell_command('rm -f /sdcard/test.apk')
 
 
