@@ -545,7 +545,7 @@ class ADBClient:
                 to False
         
         Returns:
-            Boolean indicates if uninstallation process is successful. `None` if no device found.
+            Boolean indicates if uninstalling process is successful. `None` if no device found.
         """
         if self.__selected_device is None:
             return
@@ -562,7 +562,7 @@ class ADBClient:
             Logger.success(f'Package [bold blue]{package}[/bold blue] is uninstalled successfully')
             return True
         else:
-            Logger.error(f'Uninstallation process failed')
+            Logger.error(f'Uninstalling process failed')
             return False
     
     
@@ -733,6 +733,32 @@ class ADBClient:
     
     
     
+    def is_powered_on(self) -> bool|None:
+        """
+        Check if device is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of device power on or off.
+        """
+        if self.__selected_device is None:
+            return
+        try:
+            # results = self.execute_shell_command(f'dumpsys package power | grep mHoldingDisplaySuspendBlocker')
+            # results = self.execute_shell_command(f'dumpsys package power | grep "Display Power"')
+            results = self.execute_shell_command(f'dumpsys power | grep mWakefulness')
+            if 'Awake' in results:
+                return True
+            elif 'Asleep' in results:
+                return False
+            else:
+                return None
+        except:
+            return
+        
+        
+        
+        
+        
     def execute_shell_command(self, command: str) -> str:
         """
         The function executes an adb shell command by calling `adb shell` command.

@@ -123,6 +123,17 @@ class AndroidTVController:
 
 
 
+    def is_powered_on(self) -> bool:
+        """
+        Check if TV is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of TV power on or off.
+        """
+        return self.is_powered_on()
+    
+    
+    
     def press_power(self):
         """
         Simulates pressing power button on Android TV device remote control.

@@ -573,7 +573,7 @@ class ADBClient:
                 to False
         
         Returns:
-            Boolean indicates if uninstallation process is successful. `None` if no device found.
+            Boolean indicates if uninstalling process is successful. `None` if no device found.
         &#34;&#34;&#34;
         if self.__selected_device is None:
             return
@@ -590,7 +590,7 @@ class ADBClient:
             Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
             return True
         else:
-            Logger.error(f&#39;Uninstallation process failed&#39;)
+            Logger.error(f&#39;Uninstalling process failed&#39;)
             return False
     
     
@@ -761,6 +761,32 @@ class ADBClient:
     
     
     
+    def is_powered_on(self) -&gt; bool|None:
+        &#34;&#34;&#34;
+        Check if device is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of device power on or off.
+        &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
+        try:
+            # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
+            # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
+            results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
+            if &#39;Awake&#39; in results:
+                return True
+            elif &#39;Asleep&#39; in results:
+                return False
+            else:
+                return None
+        except:
+            return
+        
+        
+        
+        
+        
     def execute_shell_command(self, command: str) -&gt; str:
         &#34;&#34;&#34;
         The function executes an adb shell command by calling `adb shell` command.
@@ -1393,7 +1419,7 @@ Defaults to False.</dd>
                 to False
         
         Returns:
-            Boolean indicates if uninstallation process is successful. `None` if no device found.
+            Boolean indicates if uninstalling process is successful. `None` if no device found.
         &#34;&#34;&#34;
         if self.__selected_device is None:
             return
@@ -1410,7 +1436,7 @@ Defaults to False.</dd>
             Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
             return True
         else:
-            Logger.error(f&#39;Uninstallation process failed&#39;)
+            Logger.error(f&#39;Uninstalling process failed&#39;)
             return False
     
     
@@ -1581,6 +1607,32 @@ Defaults to False.</dd>
     
     
     
+    def is_powered_on(self) -&gt; bool|None:
+        &#34;&#34;&#34;
+        Check if device is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of device power on or off.
+        &#34;&#34;&#34;
+        if self.__selected_device is None:
+            return
+        try:
+            # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
+            # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
+            results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
+            if &#39;Awake&#39; in results:
+                return True
+            elif &#39;Asleep&#39; in results:
+                return False
+            else:
+                return None
+        except:
+            return
+        
+        
+        
+        
+        
     def execute_shell_command(self, command: str) -&gt; str:
         &#34;&#34;&#34;
         The function executes an adb shell command by calling `adb shell` command.
@@ -2163,6 +2215,40 @@ specified IP address, and False otherwise.</p></div>
         return False</code></pre>
 </details>
 </dd>
+<dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_powered_on"><code class="name flex">
+<span>def <span class="ident">is_powered_on</span></span>(<span>self) ‑> bool | None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if device is working or not. (Power ON/OFF)</p>
+<h2 id="return">Return</h2>
+<p>Statues of device power on or off.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_powered_on(self) -&gt; bool|None:
+    &#34;&#34;&#34;
+    Check if device is working or not. (Power ON/OFF)
+    
+    Return:
+        Statues of device power on or off.
+    &#34;&#34;&#34;
+    if self.__selected_device is None:
+        return
+    try:
+        # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
+        # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
+        results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
+        if &#39;Awake&#39; in results:
+            return True
+        elif &#39;Asleep&#39; in results:
+            return False
+        else:
+            return None
+    except:
+        return</code></pre>
+</details>
+</dd>
 <dt id="AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server"><code class="name flex">
 <span>def <span class="ident">kill_server</span></span>(<span>self) ‑> bool</span>
 </code></dt>
@@ -2673,7 +2759,7 @@ If set to False (default), the directories will be removed along with the app pa
 to False</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>Boolean indicates if uninstallation process is successful. <code>None</code> if no device found.</p></div>
+<p>Boolean indicates if uninstalling process is successful. <code>None</code> if no device found.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -2692,7 +2778,7 @@ to False</dd>
             to False
     
     Returns:
-        Boolean indicates if uninstallation process is successful. `None` if no device found.
+        Boolean indicates if uninstalling process is successful. `None` if no device found.
     &#34;&#34;&#34;
     if self.__selected_device is None:
         return
@@ -2709,7 +2795,7 @@ to False</dd>
         Logger.success(f&#39;Package [bold blue]{package}[/bold blue] is uninstalled successfully&#39;)
         return True
     else:
-        Logger.error(f&#39;Uninstallation process failed&#39;)
+        Logger.error(f&#39;Uninstalling process failed&#39;)
         return False</code></pre>
 </details>
 </dd>
@@ -2749,6 +2835,7 @@ to False</dd>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.install" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.install">install</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_connected" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.is_connected">is_connected</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_installed" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.is_installed">is_installed</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.is_powered_on" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.is_powered_on">is_powered_on</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.kill_server">kill_server</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.list_packages" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.list_packages">list_packages</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.adb_client.ADBClient.pull" href="#AndroidTVController.android_tv_rc.adb_client.ADBClient.pull">pull</a></code></li>

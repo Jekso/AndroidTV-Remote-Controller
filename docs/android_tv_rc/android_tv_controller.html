@@ -151,6 +151,17 @@ class AndroidTVController:
 
 
 
+    def is_powered_on(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if TV is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of TV power on or off.
+        &#34;&#34;&#34;
+        return self.is_powered_on()
+    
+    
+    
     def press_power(self):
         &#34;&#34;&#34;
         Simulates pressing power button on Android TV device remote control.
@@ -430,6 +441,17 @@ Defaults to False.</dd>
 
 
 
+    def is_powered_on(self) -&gt; bool:
+        &#34;&#34;&#34;
+        Check if TV is working or not. (Power ON/OFF)
+        
+        Return:
+            Statues of TV power on or off.
+        &#34;&#34;&#34;
+        return self.is_powered_on()
+    
+    
+    
     def press_power(self):
         &#34;&#34;&#34;
         Simulates pressing power button on Android TV device remote control.
@@ -602,6 +624,27 @@ Defaults to False.</dd>
     Check if connection is successfully established.
     &#34;&#34;&#34;
     return self.__adb_client.is_connected(self.__ip)</code></pre>
+</details>
+</dd>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_powered_on"><code class="name flex">
+<span>def <span class="ident">is_powered_on</span></span>(<span>self) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if TV is working or not. (Power ON/OFF)</p>
+<h2 id="return">Return</h2>
+<p>Statues of TV power on or off.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_powered_on(self) -&gt; bool:
+    &#34;&#34;&#34;
+    Check if TV is working or not. (Power ON/OFF)
+    
+    Return:
+        Statues of TV power on or off.
+    &#34;&#34;&#34;
+    return self.is_powered_on()</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">
@@ -1002,6 +1045,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.connect" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.connect">connect</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.get_adb_client">get_adb_client</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_connected" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_connected">is_connected</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_powered_on" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_powered_on">is_powered_on</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime">open_amazon_prime</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_app">open_app</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_netflix">open_netflix</a></code></li>
