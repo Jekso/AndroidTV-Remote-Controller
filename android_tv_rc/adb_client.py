@@ -743,15 +743,10 @@ class ADBClient:
         if self.__selected_device is None:
             return
         try:
-            # results = self.execute_shell_command(f'dumpsys package power | grep mHoldingDisplaySuspendBlocker')
-            # results = self.execute_shell_command(f'dumpsys package power | grep "Display Power"')
-            results = self.execute_shell_command(f'dumpsys power | grep mWakefulness')
-            if 'Awake' in results:
-                return True
-            elif 'Asleep' in results:
-                return False
-            else:
-                return None
+            # results = self.execute_shell_command(f'dumpsys power | grep mHoldingDisplaySuspendBlocker') (true, false)
+            # results = self.execute_shell_command(f'dumpsys power | grep mWakefulness') (Asleep | Awake | Dreaming)
+            results = self.execute_shell_command(f'dumpsys power | grep "Display Power"')
+            return 'ON' in results
         except:
             return
         

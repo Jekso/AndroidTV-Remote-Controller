@@ -771,15 +771,10 @@ class ADBClient:
         if self.__selected_device is None:
             return
         try:
-            # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
-            # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
-            results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
-            if &#39;Awake&#39; in results:
-                return True
-            elif &#39;Asleep&#39; in results:
-                return False
-            else:
-                return None
+            # results = self.execute_shell_command(f&#39;dumpsys power | grep mHoldingDisplaySuspendBlocker&#39;) (true, false)
+            # results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;) (Asleep | Awake | Dreaming)
+            results = self.execute_shell_command(f&#39;dumpsys power | grep &#34;Display Power&#34;&#39;)
+            return &#39;ON&#39; in results
         except:
             return
         
@@ -1617,15 +1612,10 @@ Defaults to False.</dd>
         if self.__selected_device is None:
             return
         try:
-            # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
-            # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
-            results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
-            if &#39;Awake&#39; in results:
-                return True
-            elif &#39;Asleep&#39; in results:
-                return False
-            else:
-                return None
+            # results = self.execute_shell_command(f&#39;dumpsys power | grep mHoldingDisplaySuspendBlocker&#39;) (true, false)
+            # results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;) (Asleep | Awake | Dreaming)
+            results = self.execute_shell_command(f&#39;dumpsys power | grep &#34;Display Power&#34;&#39;)
+            return &#39;ON&#39; in results
         except:
             return
         
@@ -2236,15 +2226,10 @@ specified IP address, and False otherwise.</p></div>
     if self.__selected_device is None:
         return
     try:
-        # results = self.execute_shell_command(f&#39;dumpsys package power | grep mHoldingDisplaySuspendBlocker&#39;)
-        # results = self.execute_shell_command(f&#39;dumpsys package power | grep &#34;Display Power&#34;&#39;)
-        results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;)
-        if &#39;Awake&#39; in results:
-            return True
-        elif &#39;Asleep&#39; in results:
-            return False
-        else:
-            return None
+        # results = self.execute_shell_command(f&#39;dumpsys power | grep mHoldingDisplaySuspendBlocker&#39;) (true, false)
+        # results = self.execute_shell_command(f&#39;dumpsys power | grep mWakefulness&#39;) (Asleep | Awake | Dreaming)
+        results = self.execute_shell_command(f&#39;dumpsys power | grep &#34;Display Power&#34;&#39;)
+        return &#39;ON&#39; in results
     except:
         return</code></pre>
 </details>
