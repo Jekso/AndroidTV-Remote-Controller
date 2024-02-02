@@ -151,14 +151,14 @@ class AndroidTVController:
 
 
 
-    def is_powered_on(self) -&gt; bool:
+    def is_powered_on(self) -&gt; bool|None:
         &#34;&#34;&#34;
         Check if TV is working or not. (Power ON/OFF)
         
         Return:
             Statues of TV power on or off.
         &#34;&#34;&#34;
-        return self.is_powered_on()
+        return self.__adb_client.is_powered_on()
     
     
     
@@ -441,14 +441,14 @@ Defaults to False.</dd>
 
 
 
-    def is_powered_on(self) -&gt; bool:
+    def is_powered_on(self) -&gt; bool|None:
         &#34;&#34;&#34;
         Check if TV is working or not. (Power ON/OFF)
         
         Return:
             Statues of TV power on or off.
         &#34;&#34;&#34;
-        return self.is_powered_on()
+        return self.__adb_client.is_powered_on()
     
     
     
@@ -627,7 +627,7 @@ Defaults to False.</dd>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.is_powered_on"><code class="name flex">
-<span>def <span class="ident">is_powered_on</span></span>(<span>self) ‑> bool</span>
+<span>def <span class="ident">is_powered_on</span></span>(<span>self) ‑> bool | None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Check if TV is working or not. (Power ON/OFF)</p>
@@ -637,14 +637,14 @@ Defaults to False.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def is_powered_on(self) -&gt; bool:
+<pre><code class="python">def is_powered_on(self) -&gt; bool|None:
     &#34;&#34;&#34;
     Check if TV is working or not. (Power ON/OFF)
     
     Return:
         Statues of TV power on or off.
     &#34;&#34;&#34;
-    return self.is_powered_on()</code></pre>
+    return self.__adb_client.is_powered_on()</code></pre>
 </details>
 </dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.open_amazon_prime"><code class="name flex">

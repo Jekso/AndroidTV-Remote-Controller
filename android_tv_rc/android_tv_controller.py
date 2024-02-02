@@ -123,14 +123,14 @@ class AndroidTVController:
 
 
 
-    def is_powered_on(self) -> bool:
+    def is_powered_on(self) -> bool|None:
         """
         Check if TV is working or not. (Power ON/OFF)
         
         Return:
             Statues of TV power on or off.
         """
-        return self.is_powered_on()
+        return self.__adb_client.is_powered_on()
     
     
     
