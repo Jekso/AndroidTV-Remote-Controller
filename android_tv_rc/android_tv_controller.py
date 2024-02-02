@@ -61,6 +61,12 @@ class AndroidTVController:
 
 
 
+    def press_tv(self):
+        """Simulates pressing TV input button on Android TV device remote control."""
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        
+        
+        
     def press_back(self):
         """Simulates pressing back button on Android TV device remote control."""
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)

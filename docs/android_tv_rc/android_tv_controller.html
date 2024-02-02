@@ -89,6 +89,12 @@ class AndroidTVController:
 
 
 
+    def press_tv(self):
+        &#34;&#34;&#34;Simulates pressing TV input button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        
+        
+        
     def press_back(self):
         &#34;&#34;&#34;Simulates pressing back button on Android TV device remote control.&#34;&#34;&#34;
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)
@@ -379,6 +385,12 @@ Defaults to False.</dd>
 
 
 
+    def press_tv(self):
+        &#34;&#34;&#34;Simulates pressing TV input button on Android TV device remote control.&#34;&#34;&#34;
+        self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)
+        
+        
+        
     def press_back(self):
         &#34;&#34;&#34;Simulates pressing back button on Android TV device remote control.&#34;&#34;&#34;
         self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_BACK)
@@ -963,6 +975,20 @@ and it will take a few seconds to wake up when you press a button.</p></div>
     self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_SOFT_SLEEP)</code></pre>
 </details>
 </dd>
+<dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_tv"><code class="name flex">
+<span>def <span class="ident">press_tv</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simulates pressing TV input button on Android TV device remote control.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def press_tv(self):
+    &#34;&#34;&#34;Simulates pressing TV input button on Android TV device remote control.&#34;&#34;&#34;
+    self.__adb_client.send_keyevent_input(KeyCodes.KEYCODE_TV)</code></pre>
+</details>
+</dd>
 <dt id="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down"><code class="name flex">
 <span>def <span class="ident">press_volume_down</span></span>(<span>self)</span>
 </code></dt>
@@ -1065,6 +1091,7 @@ and it will take a few seconds to wake up when you press a button.</p></div>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_power" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_power">press_power</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_sleep" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_sleep">press_sleep</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_soft_sleep" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_soft_sleep">press_soft_sleep</a></code></li>
+<li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_tv" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_tv">press_tv</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_down">press_volume_down</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_mute" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_mute">press_volume_mute</a></code></li>
 <li><code><a title="AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_up" href="#AndroidTVController.android_tv_rc.android_tv_controller.AndroidTVController.press_volume_up">press_volume_up</a></code></li>
