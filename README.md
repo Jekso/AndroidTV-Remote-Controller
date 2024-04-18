@@ -5,6 +5,9 @@
 This python library empowers you to seamlessly interact with your Android TV device programmatically, simulating key presses, launching apps, and executing various commands through ADB (Android Debug Bridge).
 This means you can use it to control your Android TV or even any android devices with very simple python methods, very useful for creating custom apps for smart homes.
 
+This is video demo for using the API to control my Android TV
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/TchUzv5wb5E/0.jpg)](https://www.youtube.com/watch?v=TchUzv5wb5E)
+
 ## Features
 
 - **Comprehensive command set:**
